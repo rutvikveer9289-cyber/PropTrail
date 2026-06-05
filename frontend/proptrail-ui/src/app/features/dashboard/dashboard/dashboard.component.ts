@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -103,7 +103,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -126,6 +129,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           error: () => {
             this.isLoading = false;
             this.dashboardError = 'Unable to load dashboard data. Check backend API.';
+            this.cdr.detectChanges();
           }
         });
       }
@@ -165,6 +169,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         fill: true, tension: 0.4, pointBackgroundColor: '#06b6d4', pointRadius: 4
       }]
     };
+    this.cdr.detectChanges();
   }
 
   private animateValue(prop: string, start: number, end: number, duration: number): void {
@@ -190,7 +195,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   loadFollowUpReminders(): void {
     this.dashboardService.getFollowUpReminders().subscribe({
-      next: (data) => { this.followUpReminders = data; },
+      next: (data) => { 
+        this.followUpReminders = data; 
+        this.cdr.detectChanges();
+      },
       error: (err) => console.warn('Follow-up reminders unavailable:', err)
     });
   }

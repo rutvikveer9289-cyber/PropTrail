@@ -126,6 +126,23 @@ export class AppComponent implements OnInit {
     '/broker-performance': 'Broker Performance',
   };
 
+  private getLabelForUrl(url: string): string {
+    const path = url.split('?')[0].split('#')[0];
+    if (this.routeLabelMap[path]) {
+      return this.routeLabelMap[path];
+    }
+    
+    // Dynamic segments fallback
+    if (path.startsWith('/lead/')) return 'Leads';
+    if (path.startsWith('/property/')) return 'Properties';
+    if (path.startsWith('/visit/')) return 'Visits';
+    if (path.startsWith('/deal/')) return 'Deals';
+    if (path.startsWith('/owner/')) return 'Owners';
+    if (path.startsWith('/broker/')) return 'Brokers';
+    
+    return 'PropTrail';
+  }
+
   constructor(
     public authService: AuthService,
     private notificationService: NotificationService,
@@ -165,14 +182,15 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
-      this.currentPageLabel = this.routeLabelMap[e.urlAfterRedirects] ?? 'PropTrail';
+      this.currentPageLabel = this.getLabelForUrl(e.urlAfterRedirects);
       this.showNotificationPanel = false;
       this.showQuickAdd = false;
       this.showUserDropdown = false;
+      this.cdr.detectChanges();
     });
 
     // Initial page label
-    this.currentPageLabel = this.routeLabelMap[this.router.url] ?? 'Dashboard';
+    this.currentPageLabel = this.getLabelForUrl(this.router.url);
 
     // Use distinctUntilChanged to prevent duplicate calls when BehaviorSubject
     // emits the same user reference multiple times

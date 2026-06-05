@@ -34,8 +34,10 @@ export class AppComponent implements OnInit {
   // ── Sidebar State ─────────────────────────────────────
   sidebarCollapsed = false;
 
-  // ── Breadcrumb ────────────────────────────────────────
   currentPageLabel = 'Dashboard';
+  isNestedRoute = false;
+  parentPageLabel = '';
+  parentPageRoute = '';
 
   // ── Notification Panel ────────────────────────────────
   unreadCount = 0;
@@ -143,6 +145,25 @@ export class AppComponent implements OnInit {
     return 'PropTrail';
   }
 
+  private updateBreadcrumbs(url: string): void {
+    const path = url.split('?')[0].split('#')[0];
+    this.currentPageLabel = this.getLabelForUrl(url);
+
+    // Split segments and filter out empty strings
+    const segments = path.split('/').filter(s => s.length > 0);
+    
+    if (segments.length > 1) {
+      this.isNestedRoute = true;
+      const parentPath = '/' + segments[0];
+      this.parentPageRoute = parentPath;
+      this.parentPageLabel = this.routeLabelMap[parentPath] ?? 'Back';
+    } else {
+      this.isNestedRoute = false;
+      this.parentPageRoute = '';
+      this.parentPageLabel = '';
+    }
+  }
+
   constructor(
     public authService: AuthService,
     private notificationService: NotificationService,
@@ -182,7 +203,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
-      this.currentPageLabel = this.getLabelForUrl(e.urlAfterRedirects);
+      this.updateBreadcrumbs(e.urlAfterRedirects);
       this.showNotificationPanel = false;
       this.showQuickAdd = false;
       this.showUserDropdown = false;
@@ -190,7 +211,7 @@ export class AppComponent implements OnInit {
     });
 
     // Initial page label
-    this.currentPageLabel = this.getLabelForUrl(this.router.url);
+    this.updateBreadcrumbs(this.router.url);
 
     // Use distinctUntilChanged to prevent duplicate calls when BehaviorSubject
     // emits the same user reference multiple times

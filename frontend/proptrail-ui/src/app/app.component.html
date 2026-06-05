@@ -74,12 +74,12 @@
 
       <!-- Left: Breadcrumb -->
       <div class="header-left">
-        <nav class="breadcrumb-nav" aria-label="breadcrumb" *ngIf="currentPageLabel !== 'Dashboard'">
+        <nav class="breadcrumb-nav" aria-label="breadcrumb" *ngIf="isNestedRoute">
           <a class="breadcrumb-home" routerLink="/dashboard" style="text-decoration: none; display: flex; align-items: center;">
             <span class="material-symbols-outlined icon-sm" style="color:#94a3b8;">home</span>
           </a>
           <span class="breadcrumb-sep">›</span>
-          <span class="breadcrumb-current">{{ currentPageLabel }}</span>
+          <a [routerLink]="parentPageRoute" class="breadcrumb-link" style="text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 0.75rem;">{{ parentPageLabel }}</a>
         </nav>
         <h1 class="header-page-title">{{ currentPageLabel }}</h1>
       </div>

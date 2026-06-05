@@ -74,10 +74,10 @@
 
       <!-- Left: Breadcrumb -->
       <div class="header-left">
-        <nav class="breadcrumb-nav" aria-label="breadcrumb">
-          <span class="breadcrumb-home">
+        <nav class="breadcrumb-nav" aria-label="breadcrumb" *ngIf="currentPageLabel !== 'Dashboard'">
+          <a class="breadcrumb-home" routerLink="/dashboard" style="text-decoration: none; display: flex; align-items: center;">
             <span class="material-symbols-outlined icon-sm" style="color:#94a3b8;">home</span>
-          </span>
+          </a>
           <span class="breadcrumb-sep">›</span>
           <span class="breadcrumb-current">{{ currentPageLabel }}</span>
         </nav>

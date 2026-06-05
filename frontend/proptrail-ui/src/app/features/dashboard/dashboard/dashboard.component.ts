@@ -181,9 +181,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       count++;
       current += step;
       (this as any)[prop] = Math.round(current);
+      this.cdr.detectChanges();
       if (count >= steps) {
         (this as any)[prop] = end;
         clearInterval(timer);
+        this.cdr.detectChanges();
       }
     }, duration / steps);
     this.animTimers.push(timer);

@@ -88,6 +88,7 @@
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 
   &::after {
     content: '';

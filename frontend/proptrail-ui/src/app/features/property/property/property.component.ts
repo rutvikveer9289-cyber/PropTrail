@@ -386,4 +386,15 @@ export class PropertyComponent implements OnInit {
       }
     });
   }
+
+  formatBhk(count: number | null | undefined): string {
+    if (count === null || count === undefined) return 'N/A';
+    if (count === 0) return 'Commercial';
+    if (count === 11) return '1 RK';
+    if (count === 15) return '1.5 BHK';
+    if (count === 25) return '2.5 BHK';
+    if (count === 35) return '3.5 BHK';
+    if (count === 45) return '4.5 BHK';
+    return count + ' BHK';
+  }
 }

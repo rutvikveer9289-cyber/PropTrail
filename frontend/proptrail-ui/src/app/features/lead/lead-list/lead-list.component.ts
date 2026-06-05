@@ -298,4 +298,15 @@ export class LeadListComponent implements OnInit {
     };
     this.isEditMode = false;
   }
+
+  formatBhk(count: number | null | undefined): string {
+    if (count === null || count === undefined) return 'Any BHK';
+    if (count === 0) return 'Commercial';
+    if (count === 11) return '1 RK';
+    if (count === 15) return '1.5 BHK';
+    if (count === 25) return '2.5 BHK';
+    if (count === 35) return '3.5 BHK';
+    if (count === 45) return '4.5 BHK';
+    return count + ' BHK';
+  }
 }

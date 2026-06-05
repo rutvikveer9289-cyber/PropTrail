@@ -59,10 +59,15 @@
                 <select class="pt-select" [(ngModel)]="lead.preferredBhk" name="preferredBhk">
                   <option [ngValue]="null">Any BHK</option>
                   <option [ngValue]="0">Commercial (N/A)</option>
+                  <option [ngValue]="11">1 RK</option>
                   <option [ngValue]="1">1 BHK</option>
+                  <option [ngValue]="15">1.5 BHK</option>
                   <option [ngValue]="2">2 BHK</option>
+                  <option [ngValue]="25">2.5 BHK</option>
                   <option [ngValue]="3">3 BHK</option>
+                  <option [ngValue]="35">3.5 BHK</option>
                   <option [ngValue]="4">4 BHK</option>
+                  <option [ngValue]="5">5 BHK</option>
                 </select>
               </div>
               <div class="form-group col">
@@ -238,7 +243,7 @@
               </div>
             </td>
             <td>
-              <span class="pt-badge badge-neutral">{{ l.preferredBhk === 0 ? 'Commercial' : (l.preferredBhk ? l.preferredBhk + ' BHK' : 'Any BHK') }}</span>
+              <span class="pt-badge badge-neutral">{{ formatBhk(l.preferredBhk) }}</span>
               <div class="notes-preview mt-1" *ngIf="l.interestedProperty" title="{{ l.interestedProperty }}">
                 <strong>Note:</strong> {{ l.interestedProperty }}
               </div>
@@ -358,7 +363,7 @@
           <div class="criteria-grid">
             <div class="crit-item">
               <span class="crit-label">BHK:</span>
-              <span class="pt-badge badge-primary">{{ selectedLeadForMatching.preferredBhk === 0 ? 'Commercial' : (selectedLeadForMatching.preferredBhk ? selectedLeadForMatching.preferredBhk + ' BHK' : 'Any') }}</span>
+              <span class="pt-badge badge-primary">{{ formatBhk(selectedLeadForMatching.preferredBhk) }}</span>
             </div>
             <div class="crit-item">
               <span class="crit-label">Locality:</span>
@@ -407,7 +412,7 @@
                 </div>
                 <div class="match-prop-meta text-muted">
                   <span class="material-symbols-outlined icon-sm">{{ p.bhkCount === 0 ? 'business' : 'bed' }}</span>
-                  {{ p.bhkCount === 0 ? 'Commercial' : p.bhkCount + ' BHK' }}
+                  {{ p.bhkCount === 0 ? 'Commercial' : p.bhkCount === 11 ? '1 RK' : p.bhkCount === 15 ? '1.5 BHK' : p.bhkCount === 25 ? '2.5 BHK' : p.bhkCount === 35 ? '3.5 BHK' : p.bhkCount === 45 ? '4.5 BHK' : p.bhkCount + ' BHK' }}
                 </div>
               </div>
               <div class="match-prop-price-footer">

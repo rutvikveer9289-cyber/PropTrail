@@ -119,10 +119,7 @@
           </div>
           <div>
             <label class="text-slate-400 block text-xs">BHK Choice</label>
-            <span class="text-slate-200 font-semibold" *ngIf="lead.preferredBhk !== null && lead.preferredBhk !== undefined">
-              {{ lead.preferredBhk === 0 ? 'Commercial' : lead.preferredBhk + ' BHK' }}
-            </span>
-            <span class="text-slate-200 font-semibold" *ngIf="lead.preferredBhk === null || lead.preferredBhk === undefined">No Preference</span>
+            <span class="text-slate-200 font-semibold">{{ formatBhk(lead.preferredBhk) }}</span>
           </div>
           <div>
             <label class="text-slate-400 block text-xs">Budget Boundary</label>

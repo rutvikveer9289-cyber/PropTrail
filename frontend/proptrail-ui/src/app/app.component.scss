@@ -5,7 +5,9 @@
 // ── Layout Shell ─────────────────────────────────────────────
 .app-shell {
   display: flex;
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
   background-color: var(--bg-app);
   font-family: var(--font-sans);
 }
@@ -501,6 +503,7 @@
 .main-area {
   flex: 1;
   margin-left: var(--sidebar-width);
+  height: 100vh;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

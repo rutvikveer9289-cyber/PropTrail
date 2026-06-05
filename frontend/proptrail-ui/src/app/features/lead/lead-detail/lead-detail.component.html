@@ -1,0 +1,280 @@
+<div class="lead-detail-container p-6 min-h-screen bg-slate-950 text-slate-100 font-sans">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+    <div>
+      <a routerLink="/lead" class="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 mb-2 text-sm">
+        ← Back to Leads List
+      </a>
+      <h1 class="text-3xl font-extrabold tracking-tight" *ngIf="lead">
+        {{ lead.customerName }}
+      </h1>
+      <p class="text-slate-400" *ngIf="lead">
+        Source: <span class="text-indigo-300 font-medium">{{ lead.source || 'Direct Inquiry' }}</span>
+      </p>
+    </div>
+    
+    <div class="flex flex-wrap gap-3" *ngIf="lead">
+      <button 
+        (click)="runAIScoring()" 
+        [disabled]="isScoring"
+        class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 font-semibold text-white transition flex items-center gap-2 shadow-lg shadow-indigo-600/30 disabled:opacity-50">
+        <span *ngIf="isScoring" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+        ✨ Analyze Lead (AI)
+      </button>
+      
+      <button 
+        (click)="autoAssignBroker()" 
+        [disabled]="isAssigning"
+        class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold text-white transition flex items-center gap-2 shadow-lg shadow-emerald-600/30 disabled:opacity-50">
+        <span *ngIf="isAssigning" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+        🤖 Workload Smart Assign
+      </button>
+    </div>
+  </div>
+
+  <div class="flex justify-center items-center py-20" *ngIf="isLoading">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-indigo-500"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" *ngIf="!isLoading && lead">
+    
+    <div class="space-y-6 lg:col-span-1">
+      
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+        <h2 class="text-lg font-bold text-slate-300 mb-4 flex items-center gap-2">
+          <span>✨</span> Lead Conversion Index
+        </h2>
+        <div class="flex flex-col items-center justify-center py-4">
+          <div class="relative flex items-center justify-center">
+            <svg class="w-32 h-32 transform -rotate-90">
+              <circle cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="transparent" />
+              <circle cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8" 
+                [attr.stroke-dasharray]="339.292"
+                [attr.stroke-dashoffset]="339.292 - (339.292 * lead.leadScore) / 100"
+                [ngClass]="{
+                  'text-emerald-500': lead.leadScore >= 75,
+                  'text-amber-500': lead.leadScore >= 40 && lead.leadScore < 75,
+                  'text-rose-500': lead.leadScore < 40
+                }" 
+                stroke-linecap="round"
+                fill="transparent" />
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-3xl font-extrabold tracking-tight">{{ lead.leadScore }}%</span>
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Score</span>
+            </div>
+          </div>
+          
+          <div class="mt-4 text-center">
+            <span class="px-3 py-1 text-xs rounded-full font-bold uppercase tracking-wider" 
+              [ngClass]="{
+                'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30': lead.leadScore >= 75,
+                'bg-amber-500/15 text-amber-400 border border-amber-500/30': lead.leadScore >= 40 && lead.leadScore < 75,
+                'bg-rose-500/15 text-rose-400 border border-rose-500/30': lead.leadScore < 40
+              }">
+              {{ lead.leadScore >= 75 ? 'High Priority' : lead.leadScore >= 40 ? 'Medium Priority' : 'Low Priority' }}
+            </span>
+            <p class="text-xs text-slate-400 mt-3 px-4 leading-relaxed">
+              Calculated using demographic metrics, property interest, and site visit timeline activity.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-lg font-bold text-slate-300 mb-4 border-b border-slate-800 pb-2">
+          Contact Info
+        </h2>
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="text-slate-400 block text-xs">Mobile</label>
+            <span class="text-slate-200 font-semibold">{{ lead.mobile }}</span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">Email</label>
+            <span class="text-slate-200 font-semibold">{{ lead.email }}</span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">Assigned Broker</label>
+            <span class="text-slate-200 font-semibold" *ngIf="lead.assignedBroker">
+              {{ lead.assignedBroker.firstName }} {{ lead.assignedBroker.lastName }}
+            </span>
+            <span class="text-rose-400 font-semibold italic" *ngIf="!lead.assignedBroker">
+              Unassigned
+            </span>
+          </div>
+        </div>
+
+        <h2 class="text-lg font-bold text-slate-300 mt-6 mb-4 border-b border-slate-800 pb-2">
+          Requirement Profile
+        </h2>
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="text-slate-400 block text-xs">Interested In Property</label>
+            <span class="text-slate-200 font-semibold">{{ lead.interestedProperty || 'General Inquiry' }}</span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">Preferred Locality</label>
+            <span class="text-slate-200 font-semibold">{{ lead.preferredLocality || 'Any' }}</span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">BHK Choice</label>
+            <span class="text-slate-200 font-semibold" *ngIf="lead.preferredBhk !== null && lead.preferredBhk !== undefined">
+              {{ lead.preferredBhk === 0 ? 'Commercial' : lead.preferredBhk + ' BHK' }}
+            </span>
+            <span class="text-slate-200 font-semibold" *ngIf="lead.preferredBhk === null || lead.preferredBhk === undefined">No Preference</span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">Budget Boundary</label>
+            <span class="text-slate-200 font-semibold" *ngIf="lead.minBudget || lead.maxBudget">
+              ₹{{ (lead.minBudget || 0) | number }} – ₹{{ (lead.maxBudget || 0) | number }}
+            </span>
+            <span class="text-slate-200 font-semibold" *ngIf="!lead.minBudget && !lead.maxBudget">
+              Not Specified
+            </span>
+          </div>
+          <div>
+            <label class="text-slate-400 block text-xs">Priority level</label>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold"
+              [ngClass]="{
+                'bg-rose-500/20 text-rose-400 border border-rose-500/30': lead.priorityTag === 'Hot',
+                'bg-amber-500/20 text-amber-400 border border-amber-500/30': lead.priorityTag === 'Warm',
+                'bg-blue-500/20 text-blue-400 border border-blue-500/30': lead.priorityTag === 'Cold'
+              }">
+              {{ lead.priorityTag }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2 space-y-6">
+      
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-lg font-bold text-slate-300 mb-4">
+          Lead Lifecycle Progression
+        </h2>
+        
+        <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-2 pt-2">
+          <ng-container *ngFor="let stage of ['Inquiry', 'Contacted', 'Follow-up Scheduled', 'Site Visit Planned', 'Site Visit Completed', 'Negotiation', 'Deal Won', 'Lost']; let idx = index; let last = last">
+            <button 
+              (click)="updateLeadStatus(stage)"
+              [ngClass]="{
+                'bg-indigo-600 text-white border-indigo-500': lead.status === stage,
+                'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700': lead.status !== stage
+              }"
+              class="flex-1 text-center py-2 px-3 rounded-lg text-xs font-semibold border transition whitespace-nowrap">
+              {{ stage }}
+            </button>
+            <div class="hidden md:block text-slate-600 text-lg" *ngIf="!last">➔</div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl shadow-xl overflow-hidden">
+        <div class="flex border-b border-slate-800 bg-slate-950/40">
+          <button 
+            (click)="activeTab = 'timeline'"
+            [ngClass]="{
+              'border-b-2 border-indigo-500 text-indigo-400 bg-indigo-500/5': activeTab === 'timeline',
+              'text-slate-400 hover:text-slate-200': activeTab !== 'timeline'
+            }"
+            class="px-6 py-4 font-bold text-sm transition">
+            📜 Interaction Timeline
+          </button>
+          <button 
+            (click)="activeTab = 'logger'"
+            [ngClass]="{
+              'border-b-2 border-indigo-500 text-indigo-400 bg-indigo-500/5': activeTab === 'logger',
+              'text-slate-400 hover:text-slate-200': activeTab !== 'logger'
+            }"
+            class="px-6 py-4 font-bold text-sm transition">
+            ✍️ Log New Activity
+          </button>
+        </div>
+
+        <div class="p-6">
+          
+          <div *ngIf="activeTab === 'timeline'">
+            <div class="space-y-6 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-800" *ngIf="activities.length > 0">
+              <div class="relative pl-10" *ngFor="let act of activities">
+                
+                <div class="absolute left-1.5 top-1.5 w-6 h-6 rounded-full flex items-center justify-center border text-xs font-bold"
+                  [ngClass]="{
+                    'bg-blue-500/10 text-blue-400 border-blue-500/30': act.type === 'Call',
+                    'bg-indigo-500/10 text-indigo-400 border-indigo-500/30': act.type === 'Email',
+                    'bg-purple-500/10 text-purple-400 border-purple-500/30': act.type === 'SMS',
+                    'bg-emerald-500/10 text-emerald-400 border-emerald-500/30': act.type === 'Meeting',
+                    'bg-slate-700/20 text-slate-400 border-slate-700': act.type === 'StatusUpdate'
+                  }">
+                  <span *ngIf="act.type === 'Call'">📞</span>
+                  <span *ngIf="act.type === 'Email'">✉️</span>
+                  <span *ngIf="act.type === 'SMS'">💬</span>
+                  <span *ngIf="act.type === 'Meeting'">🤝</span>
+                  <span *ngIf="act.type === 'StatusUpdate'">🔄</span>
+                </div>
+
+                <div class="bg-slate-950/40 border border-slate-800 rounded-lg p-4">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-bold text-slate-200">{{ act.type }} Details</span>
+                    <span class="text-xs text-slate-500">{{ act.timestamp | date:'medium' }}</span>
+                  </div>
+                  <p class="text-sm text-slate-300">{{ act.notes }}</p>
+                  <div class="mt-2 flex justify-between items-center text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                    <span>Agent: {{ act.createdBy }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center py-10" *ngIf="activities.length === 0">
+              <p class="text-slate-500 text-sm">No activity logs recorded yet. Start by logging an interaction note!</p>
+            </div>
+          </div>
+
+          <div *ngIf="activeTab === 'logger'">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">Interaction Type</label>
+                <div class="flex gap-2">
+                  <button 
+                    *ngFor="let type of ['Call', 'Email', 'SMS', 'Meeting']"
+                    (click)="activityType = type"
+                    [ngClass]="{
+                      'bg-indigo-600 border-indigo-500 text-white': activityType === type,
+                      'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700': activityType !== type
+                    }"
+                    class="px-4 py-2 border rounded-lg text-sm font-semibold transition">
+                    {{ type }}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">Discussion Notes</label>
+                <textarea 
+                  [(ngModel)]="activityNotes" 
+                  rows="4" 
+                  placeholder="Summarize the client discussion details, properties shown, pricing negotiations..." 
+                  class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+              </div>
+
+              <div class="flex justify-end">
+                <button 
+                  (click)="saveActivity()" 
+                  [disabled]="isSavingActivity"
+                  class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-sm transition flex items-center gap-2">
+                  <span *ngIf="isSavingActivity" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                  Save Activity Log
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

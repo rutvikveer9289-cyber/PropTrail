@@ -1,0 +1,421 @@
+<div class="deal-container page-enter">
+
+  <!-- ── Page Header ────────────────── -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">Deal Pipeline</h2>
+      <p class="page-subtitle">Track negotiations, manage transaction checklists, and monitor commissions</p>
+    </div>
+    <div class="dash-header-actions flex items-center gap-3">
+      <!-- Kanban vs Table toggle button -->
+      <div class="toggle-group bg-slate-800 p-1 rounded-lg border border-slate-700 flex">
+        <button 
+          (click)="viewMode = 'kanban'" 
+          [class.bg-indigo-600]="viewMode === 'kanban'"
+          [class.text-white]="viewMode === 'kanban'"
+          [class.text-slate-400]="viewMode !== 'kanban'"
+          class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1">
+          Kanban Board
+        </button>
+        <button 
+          (click)="viewMode = 'table'" 
+          [class.bg-indigo-600]="viewMode === 'table'"
+          [class.text-white]="viewMode === 'table'"
+          [class.text-slate-400]="viewMode !== 'table'"
+          class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1">
+          Directory Table
+        </button>
+      </div>
+
+      <button class="pt-btn pt-btn-primary" (click)="showForm = !showForm">
+        <span class="material-symbols-outlined">{{ showForm ? 'close' : 'post_add' }}</span>
+        {{ showForm ? 'Hide Form' : 'Log New Deal' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Collapsible Deal Form ───────── -->
+  <div class="pt-card form-card mb-4" *ngIf="showForm">
+    <div class="pt-card-header">
+      <span class="section-title text-primary">
+        <span class="material-symbols-outlined icon-sm" style="vertical-align: text-bottom; margin-right: 4px;">
+          {{ editing ? 'edit_square' : 'add_box' }}
+        </span>
+        {{ editing ? 'Edit Deal Information' : 'Log New Deal' }}
+      </span>
+      <span class="pt-badge" [class.badge-primary]="!editing" [class.badge-warning]="editing">
+        {{ editing ? 'Editing Mode' : 'Sales funnels' }}
+      </span>
+    </div>
+    <div class="pt-card-body">
+      <form (submit)="saveDeal(); $event.preventDefault()">
+        <div class="form-grid">
+          <!-- Column 1: Client & Broker -->
+          <div class="form-section">
+            <h4 class="form-section-title">Stakeholders</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Buyer Client / Lead</label>
+              <select class="pt-select" [(ngModel)]="deal.leadId" name="leadId" required>
+                <option [ngValue]="0">Select Lead</option>
+                <option *ngFor="let l of leads" [ngValue]="l.id">
+                  {{ l.customerName }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Broker Agent</label>
+              <select class="pt-select" [(ngModel)]="deal.brokerId" name="brokerId" required>
+                <option [ngValue]="0">Select Broker</option>
+                <option *ngFor="let b of brokers" [ngValue]="b.id">
+                  {{ b.firstName }} {{ b.lastName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Column 2: Property & Pricing -->
+          <div class="form-section">
+            <h4 class="form-section-title">Transaction details</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Property</label>
+              <select class="pt-select" [(ngModel)]="deal.propertyId" name="propertyId" required>
+                <option [ngValue]="0">Select Property</option>
+                <option *ngFor="let p of properties" [ngValue]="p.id">
+                  {{ p.propertyName }} ({{ p.location }})
+                </option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Deal Amount (INR)</label>
+              <input type="number" class="pt-input" [(ngModel)]="deal.dealAmount" name="dealAmount" placeholder="e.g. 8,500,000">
+            </div>
+          </div>
+
+          <!-- Column 3: Closing & Stage Status -->
+          <div class="form-section">
+            <h4 class="form-section-title">Closing info</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Estimated / Closing Date</label>
+              <input type="date" class="pt-input" [(ngModel)]="deal.dealDate" name="dealDate">
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Pipeline Status</label>
+              <select class="pt-select" [(ngModel)]="deal.status" name="status">
+                <option value="Open">Open</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions mt-4 justify-content-end">
+          <button type="button" class="pt-btn pt-btn-secondary" (click)="resetForm()">
+            Clear
+          </button>
+          <button type="submit" class="pt-btn pt-btn-primary">
+            <span class="material-symbols-outlined icon-sm">check_circle</span>
+            {{ editing ? 'Update Deal' : 'Start Deal' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Split Workspace ────────────── -->
+  <div class="deal-workspace">
+
+    <!-- Left: Filter & Directory List / Kanban -->
+    <div class="deal-main-column">
+      <!-- Search & Advanced Filters Panel -->
+      <div class="pt-card filter-card mb-4">
+        <div class="pt-card-body filter-body">
+          <div class="filter-inputs">
+            <!-- Search Text -->
+            <div class="filter-group search-group">
+              <span class="material-symbols-outlined input-icon">search</span>
+              <input
+                type="text"
+                class="pt-input search-field"
+                placeholder="Search lead, property, or broker..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="filterDeals()">
+            </div>
+
+            <!-- Status Filter -->
+            <div class="filter-group">
+              <select class="pt-select filter-select" [(ngModel)]="filterStatus" (change)="filterDeals()">
+                <option value="">Status (All)</option>
+                <option value="Open">Open</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+              </select>
+            </div>
+
+            <!-- Stage Filter -->
+            <div class="filter-group">
+              <select class="pt-select filter-select" [(ngModel)]="filterStage" (change)="filterDeals()">
+                <option value="">Stage (All)</option>
+                <option *ngFor="let stg of stages" [value]="stg">{{ stg }}</option>
+              </select>
+            </div>
+
+            <button class="pt-btn pt-btn-secondary" (click)="clearFilters()">
+              <span class="material-symbols-outlined icon-sm">filter_alt_off</span>
+              Clear
+            </button>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="price-range-row mt-3 pt-3">
+            <span class="range-label">Amount (₹):</span>
+            <div class="range-inputs">
+              <input type="number" class="pt-input range-field" placeholder="Min Amount" [(ngModel)]="filterMinAmount" (ngModelChange)="filterDeals()">
+              <span class="range-divider">to</span>
+              <input type="number" class="pt-input range-field" placeholder="Max Amount" [(ngModel)]="filterMaxAmount" (ngModelChange)="filterDeals()">
+            </div>
+            <div class="spacer"></div>
+            <span class="small-info">Active: <strong>{{ filteredDeals.length }}</strong> Deals</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- View Option A: Kanban Board -->
+      <div class="kanban-board-container" *ngIf="viewMode === 'kanban'">
+        <div 
+          *ngFor="let stage of stages"
+          (dragover)="onDragOver($event)"
+          (drop)="onDrop($event, stage)"
+          class="kanban-column">
+          
+          <div class="kanban-column-header">
+            <h3 class="kanban-column-title">{{ stage }}</h3>
+            <span class="kanban-column-badge">
+              {{ getDealsByStage(stage).length }}
+            </span>
+          </div>
+
+          <div class="kanban-cards">
+            <div 
+              *ngFor="let d of getDealsByStage(stage)"
+              draggable="true"
+              (dragstart)="onDragStart($event, d)"
+              (click)="selectDeal(d)"
+              [class.selected]="selectedDeal && selectedDeal.dealId === d.dealId"
+              class="kanban-card">
+              
+              <div class="kanban-card-header">
+                <span class="kanban-card-id">PT-D{{ d.dealId }}</span>
+                <span class="pt-badge"
+                  [ngClass]="{
+                    'badge-success': d.status === 'Won',
+                    'badge-primary': d.status === 'Open',
+                    'badge-danger': d.status === 'Lost'
+                  }">
+                  {{ d.status }}
+                </span>
+              </div>
+
+              <h4 class="kanban-card-title">{{ getLeadName(d.leadId) }}</h4>
+              <p class="kanban-card-subtitle">{{ getPropertyName(d.propertyId) }}</p>
+              
+              <div class="kanban-card-footer">
+                <span class="kanban-card-price">₹{{ (d.dealAmount / 100000).toFixed(1) }} L</span>
+                <span class="kanban-card-date" *ngIf="d.dealDate">{{ d.dealDate | date:'MMM dd' }}</span>
+              </div>
+
+              <div class="kanban-card-actions">
+                <button (click)="editDeal(d); $event.stopPropagation()" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" title="Edit">
+                  <span class="material-symbols-outlined icon-sm">edit</span>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="getDealsByStage(stage).length === 0" class="kanban-empty-dropzone">
+              <span class="material-symbols-outlined">drag_indicator</span>
+              <span>Drag deals here</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- View Option B: Directory Table -->
+      <div class="pt-table-wrapper" *ngIf="viewMode === 'table'">
+        <div class="table-scroll-container">
+          <table class="pt-table">
+            <thead>
+              <tr>
+                <th class="ps-4">ID</th>
+                <th>Client / Broker</th>
+                <th>Property Details</th>
+                <th>Valuation</th>
+                <th>Stage &amp; Status</th>
+                <th class="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of filteredDeals"
+                  [class.active-row]="selectedDeal && selectedDeal.dealId === d.dealId"
+                  class="cursor-pointer"
+                  (click)="selectDeal(d)">
+                <td class="ps-4 text-muted fw-bold">PT-D{{ d.dealId }}</td>
+                <td>
+                  <div class="fw-700 text-dark">{{ getLeadName(d.leadId) }}</div>
+                  <div class="text-muted small d-flex align-items-center gap-1 mt-0.5">
+                    <span class="material-symbols-outlined icon-sm" style="color: #94a3b8;">support_agent</span>
+                    Broker: {{ getBrokerName(d.brokerId) }}
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-600 text-dark">{{ getPropertyName(d.propertyId) }}</div>
+                  <small class="text-muted" *ngIf="d.dealDate">Target: {{ d.dealDate | date:'mediumDate' }}</small>
+                </td>
+                <td>
+                  <h5 class="fw-800 text-primary m-0">₹{{ (d.dealAmount / 100000).toFixed(1) }} L</h5>
+                </td>
+                <td>
+                  <span class="pt-badge badge-dark d-block mb-1 text-truncate" style="max-width: 140px;" title="Current Stage">
+                    {{ d.stage || 'Inquiry' }}
+                  </span>
+                  <span class="pt-badge rounded-pill"
+                    [ngClass]="{
+                      'badge-success': d.status === 'Won',
+                      'badge-primary': d.status === 'Open',
+                      'badge-danger': d.status === 'Lost'
+                    }">
+                    {{ d.status }}
+                  </span>
+                </td>
+                <td class="text-end pe-4" (click)="$event.stopPropagation()">
+                  <div class="actions-btn-group">
+                    <button type="button" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" (click)="editDeal(d)" title="Edit Deal">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button type="button" class="pt-btn pt-btn-danger pt-btn-sm pt-btn-icon" (click)="deleteDeal(d.dealId)" title="Delete Deal">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredDeals.length === 0">
+                <td colspan="6" class="text-center p-5">
+                  <div class="empty-state py-4">
+                    <span class="material-symbols-outlined empty-icon" style="font-size: 40px; color: #cbd5e1;">handshake</span>
+                    <h4 class="fw-bold text-dark mb-1">No Active Deals</h4>
+                    <p class="text-muted small mb-0">Record a deal or adjust filters to begin.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Visual Stage Tracker & Document Checklists -->
+    <div class="deal-sidebar-column">
+      <div *ngIf="!selectedDeal" class="pt-card empty-tracker-card p-5">
+        <span class="material-symbols-outlined empty-icon">assignment_late</span>
+        <h4 class="text-muted fw-bold mb-2">No Deal Selected</h4>
+        <p class="text-secondary small">Click on any deal card or list item to track its milestones and checklist.</p>
+      </div>
+
+      <div *ngIf="selectedDeal" class="pt-card tracker-card page-enter">
+        <div class="pt-card-header pt-modal-header bg-dark text-white">
+          <div>
+            <span class="section-title text-white">Deal Tracking (ID: PT-D{{ selectedDeal.dealId }})</span>
+            <p class="text-muted small mb-0 text-white-50">Transaction milestone dashboard</p>
+          </div>
+          <span class="pt-badge badge-primary">Active Funnel</span>
+        </div>
+        <div class="pt-card-body">
+          <div class="selected-deal-brief mb-4">
+            <h4 class="fw-bold text-dark mb-1">{{ getLeadName(selectedDeal.leadId) }}</h4>
+            <div class="brief-meta text-secondary small">
+              Property: <strong>{{ getPropertyName(selectedDeal.propertyId) }}</strong> <br>
+              Target Value: <strong class="text-primary">₹{{ (selectedDeal.dealAmount / 100000).toFixed(1) }} Lakh</strong>
+            </div>
+          </div>
+
+          <!-- Visual Progress Stepper -->
+          <h6 class="tracker-section-title mb-3">Sales Pipeline Stage Funnel</h6>
+          <div class="pipeline-stepper mb-4">
+            <div *ngFor="let s of stages; let idx = index" class="stepper-node" [class.active]="selectedDeal.stage === s">
+              <button type="button"
+                class="step-circle"
+                [ngClass]="{
+                  'step-done': selectedDeal.stage === s || stages.indexOf(selectedDeal.stage) > idx,
+                  'step-current': selectedDeal.stage === s,
+                  'step-upcoming': stages.indexOf(selectedDeal.stage) < idx
+                }"
+                (click)="changeStage(s)"
+                title="Change stage to {{ s }}">
+                <span class="material-symbols-outlined" *ngIf="stages.indexOf(selectedDeal.stage) > idx">done</span>
+                <span *ngIf="stages.indexOf(selectedDeal.stage) <= idx">{{ idx + 1 }}</span>
+              </button>
+              <span class="step-label" [class.active-label]="selectedDeal.stage === s">
+                {{ s }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Document Checklist Panel -->
+          <div class="checklist-header mb-3 border-top pt-4">
+            <h6 class="tracker-section-title">Document Checklist (Stage: {{ selectedDeal.stage }})</h6>
+          </div>
+
+          <!-- Quick Add Checklist Item Form -->
+          <div class="pt-card bg-light p-3 mb-3 border">
+            <div class="custom-item-form">
+              <input type="text" class="pt-input quick-input" placeholder="e.g. Aadhaar Card, Pan Copy..." [(ngModel)]="newDocumentName">
+              <select class="pt-select quick-select" [(ngModel)]="newDocumentStage">
+                <option *ngFor="let s of stages" [value]="s">{{ s }}</option>
+              </select>
+              <button class="pt-btn pt-btn-primary pt-btn-sm" type="button" (click)="addChecklistItem()">
+                <span class="material-symbols-outlined icon-sm">add</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Document List Filtered by Current Stage -->
+          <div class="doc-checklist-box pt-card">
+            <div class="checklist-title-bar">Required Documentation</div>
+
+            <div class="checklist-items-container">
+              <div *ngFor="let doc of dealDocuments" class="checklist-item py-3">
+                <div class="doc-info">
+                  <div class="doc-name">{{ doc.documentName }}</div>
+                  <span class="pt-badge badge-neutral mt-1">{{ doc.stage }}</span>
+                </div>
+                <div class="doc-actions">
+                  <div class="status-button-group">
+                    <button type="button" class="status-btn pending-btn"
+                      [class.active]="doc.status === 'Pending'"
+                      (click)="updateDocStatus(doc, 'Pending')">Pending</button>
+                    <button type="button" class="status-btn collected-btn"
+                      [class.active]="doc.status === 'Collected'"
+                      (click)="updateDocStatus(doc, 'Collected')">Collected</button>
+                    <button type="button" class="status-btn verified-btn"
+                      [class.active]="doc.status === 'Verified'"
+                      (click)="updateDocStatus(doc, 'Verified')">Verified</button>
+                  </div>
+                  <button type="button" class="pt-btn pt-btn-danger pt-btn-sm pt-btn-icon" (click)="deleteChecklistItem(doc.id!)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="dealDocuments.length === 0" class="checklist-empty py-4 text-center">
+                <span class="material-symbols-outlined text-muted">assignment</span>
+                <p class="text-muted small mb-0 mt-2">No documents checklist listed for this deal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

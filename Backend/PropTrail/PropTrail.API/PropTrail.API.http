@@ -1,0 +1,6 @@
+@PropTrail.API_HostAddress = http://localhost:5144
+
+GET {{PropTrail.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

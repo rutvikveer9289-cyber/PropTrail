@@ -1,0 +1,10 @@
+{
+  "propertyName": "Test Property",
+  "propertyType": "Apartment",
+  "location": "Andheri West, Mumbai",
+  "price": 5000000,
+  "area": 1000,
+  "status": "Available",
+  "bhkCount": 2,
+  "listingType": "Sale"
+}

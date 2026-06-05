@@ -1,0 +1,296 @@
+// ============================================================
+// PropTrail CRM — Broker Management Styles
+// ============================================================
+
+.broker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Search & Filter Bar ─────────
+.broker-search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .search-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+    max-width: 500px;
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    .search-field {
+      padding-left: 38px;
+      padding-right: 38px;
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      border-radius: 50%;
+
+      &:hover {
+        background-color: #f1f5f9;
+        color: #475569;
+      }
+    }
+  }
+}
+
+.quick-stats-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+
+  .stats-text {
+    strong {
+      color: var(--color-primary);
+    }
+  }
+
+  span.material-symbols-outlined {
+    color: var(--color-primary);
+  }
+}
+
+// ── Workspace Layout ────────────
+.broker-workspace {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+
+  @media (max-width: 992px) {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+.directory-column {
+  flex: 1;
+}
+
+.form-column {
+  width: 360px;
+  flex-shrink: 0;
+  position: sticky;
+  top: calc(var(--header-height) + 20px);
+
+  @media (max-width: 992px) {
+    width: 100%;
+    position: static;
+  }
+}
+
+// ── Empty State ─────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--bg-muted);
+  gap: 12px;
+
+  .empty-icon {
+    font-size: 48px;
+    color: #cbd5e1;
+  }
+
+  h3 {
+    margin: 0;
+    color: var(--color-secondary);
+    font-size: 1.15rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 320px;
+    font-size: 0.875rem;
+  }
+}
+
+// ── Broker Card Grid ────────────
+.broker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.broker-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.broker-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.broker-avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 1rem;
+  color: #1e40af;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+}
+
+.broker-card-info {
+  display: flex;
+  flex-direction: column;
+
+  .broker-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin: 0;
+  }
+
+  .broker-id-label {
+    font-size: 0.72rem;
+    color: var(--bg-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 2px;
+  }
+}
+
+.broker-card-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px dashed #e2e8f0;
+  border-bottom: 1px dashed #e2e8f0;
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.825rem;
+    transition: color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary);
+
+      .contact-icon {
+        color: var(--color-primary);
+      }
+    }
+
+    .contact-icon {
+      color: #94a3b8;
+      font-size: 18px;
+      transition: color var(--transition-fast);
+    }
+
+    .contact-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.broker-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+// ── Form Card ───────────────────
+.form-card {
+  box-shadow: var(--shadow-md);
+}
+
+.broker-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.input-prefix-wrapper {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+
+  .input-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #f1f5f9;
+    border: 1.5px solid #e2e8f0;
+    border-right: none;
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .pt-input-prefix {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}

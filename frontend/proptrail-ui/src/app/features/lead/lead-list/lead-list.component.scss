@@ -1,0 +1,339 @@
+// ============================================================
+// PropTrail CRM — Lead Management Styles
+// ============================================================
+
+.lead-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Form Panel Grid ────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+
+  .form-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--color-primary);
+    border-bottom: 1.5px solid #eff6ff;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+
+  .form-group.col {
+    flex: 1;
+  }
+}
+
+// ── Filter Card ───────────────────
+.filter-card {
+  box-shadow: var(--shadow-xs);
+}
+
+.filter-body {
+  padding: 16px 20px;
+}
+
+.filter-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .filter-group {
+    flex: 1;
+    min-width: 140px;
+
+    &.search-group {
+      position: relative;
+      flex: 2;
+      min-width: 240px;
+
+      .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+      }
+
+      .search-field {
+        padding-left: 36px;
+      }
+    }
+  }
+}
+
+.filter-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .small-info {
+    font-size: 0.825rem;
+    color: var(--bg-muted);
+
+    strong {
+      color: var(--color-secondary);
+    }
+  }
+}
+
+// ── Table Styling & Columns ───────
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.client-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .small-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+  }
+}
+
+.notes-preview {
+  font-size: 0.75rem;
+  color: var(--bg-muted);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #f8fafc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #f1f5f9;
+}
+
+.actions-btn-group {
+  display: inline-flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.table-pagination-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  border-top: 1px solid #f1f5f9;
+  background-color: #f8fafc;
+
+  .small-info {
+    font-size: 0.825rem;
+    color: var(--bg-muted);
+
+    strong {
+      color: var(--color-secondary);
+    }
+  }
+
+  .pagination-buttons {
+    display: flex;
+    gap: 4px;
+  }
+}
+
+// ── Property Matches Modal ────────
+.pt-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.pt-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.pt-modal {
+  width: 100%;
+  max-width: 780px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.pt-modal-header {
+  background: var(--bg-sidebar);
+  color: #fff;
+  border-bottom: none;
+
+  .close-modal-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+  }
+}
+
+.pt-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+// Criteria Card in Modal
+.criteria-summary {
+  padding: 16px;
+  box-shadow: none;
+
+  .criteria-header {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--bg-muted);
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+
+  .criteria-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .crit-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.825rem;
+
+      .crit-label {
+        font-weight: 600;
+        color: #475569;
+      }
+    }
+  }
+}
+
+.properties-matches-container {
+  min-height: 120px;
+}
+
+// Matches Card Grid
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.match-property-card {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+
+  .match-prop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .match-prop-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .match-prop-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-secondary);
+      margin: 0;
+    }
+
+    .match-prop-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+
+      span.material-symbols-outlined {
+        font-size: 16px;
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .match-prop-price-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 10px;
+    margin-top: 4px;
+
+    .price-title {
+      font-size: 0.72rem;
+      color: var(--bg-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .price-value {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+  }
+}

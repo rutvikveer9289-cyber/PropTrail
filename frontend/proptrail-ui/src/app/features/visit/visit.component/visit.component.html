@@ -1,0 +1,351 @@
+<div class="page-container">
+
+  <!-- Page Header -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="page-title mb-1">📅 Site Visits</h2>
+      <p class="page-subtitle mb-0">Schedule and track all property site visits with buyer feedback</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center">
+      <div class="d-flex gap-2">
+        <span class="pt-badge bg-primary-subtle text-primary">
+          <span class="material-symbols-rounded fs-6">calendar_clock</span>
+          {{ scheduledCount }} Scheduled
+        </span>
+        <span class="pt-badge bg-success-subtle text-success">
+          <span class="material-symbols-rounded fs-6">check_circle</span>
+          {{ completedCount }} Completed
+        </span>
+        <span class="pt-badge bg-secondary-subtle text-secondary">
+          📊 {{ visits.length }} Total
+        </span>
+      </div>
+      <button class="pt-btn pt-btn-primary" (click)="toggleForm()">
+        <span class="material-symbols-rounded">{{ showForm && !editing ? 'close' : 'add' }}</span>
+        {{ showForm && !editing ? 'Cancel' : 'Schedule Visit' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Confirmation Preview Banner -->
+  <div *ngIf="confirmationMessage" class="whatsapp-banner pt-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="material-symbols-rounded text-success fs-4">chat</span>
+        <span class="fw-bold text-success fs-5">Visit Notification Ready</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="pt-btn pt-btn-success pt-btn-sm" (click)="sendWhatsApp()">
+          <span class="material-symbols-rounded fs-6">send</span> Send WhatsApp
+        </button>
+        <button type="button" class="pt-btn pt-btn-outline pt-btn-sm" (click)="copyMessage()">
+          <span class="material-symbols-rounded fs-6">content_copy</span> Copy
+        </button>
+        <button type="button" class="pt-btn pt-btn-text pt-btn-sm text-muted p-0" (click)="confirmationMessage = ''">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+    </div>
+    <div class="whatsapp-message-preview bg-light p-3 rounded border">
+      <pre class="mb-0 text-dark" style="white-space: pre-wrap; font-family: inherit;">{{ confirmationMessage }}</pre>
+    </div>
+  </div>
+
+  <!-- Filters Row -->
+  <div class="pt-card p-3 mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- Search -->
+      <div class="col-md-3">
+        <div class="search-input-wrap position-relative">
+          <span class="material-symbols-rounded position-absolute top-50 translate-middle-y ms-3 text-muted">search</span>
+          <input
+            type="text"
+            class="pt-input ps-5 w-100"
+            placeholder="Search broker, lead, property..."
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="filterVisits()">
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-md-2">
+        <select class="pt-input w-100" [(ngModel)]="filterStatus" (change)="filterVisits()">
+          <option value="">Status (All)</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Outcome Filter -->
+      <div class="col-md-2">
+        <select class="pt-input w-100" [(ngModel)]="filterOutcome" (change)="filterVisits()">
+          <option value="">Outcome (All)</option>
+          <option value="Pending">Pending</option>
+          <option value="Interested">Interested</option>
+          <option value="Not Interested">Not Interested</option>
+          <option value="Needs Refinement">Needs Refinement</option>
+        </select>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="col-md-2">
+        <select class="pt-input w-100" [(ngModel)]="filterRating" (change)="filterVisits()">
+          <option [ngValue]="null">Rating (All)</option>
+          <option [ngValue]="5">⭐⭐⭐⭐⭐</option>
+          <option [ngValue]="4">⭐⭐⭐⭐</option>
+          <option [ngValue]="3">⭐⭐⭐</option>
+          <option [ngValue]="2">⭐⭐</option>
+          <option [ngValue]="1">⭐</option>
+        </select>
+      </div>
+
+      <!-- Reset + Count -->
+      <div class="col-md-3 d-flex align-items-center gap-3 justify-content-end">
+        <span class="text-muted small fw-medium">{{ filteredVisits.length }} result(s)</span>
+        <button class="pt-btn pt-btn-text text-danger p-0" (click)="clearFilters()">
+          <span class="material-symbols-rounded fs-6 me-1">restart_alt</span> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="split-layout" [class.show-sidebar]="showForm">
+    
+    <!-- Main Content (Visits List) -->
+    <div class="layout-main">
+      <div class="row g-4" *ngIf="filteredVisits.length > 0">
+        <div class="col-12 col-xl-6" *ngFor="let v of filteredVisits">
+          <div class="pt-card visit-card h-100 d-flex flex-column"
+            [class.border-primary]="v.status === 'Scheduled'"
+            [class.border-success]="v.status === 'Completed'"
+            [class.border-danger]="v.status === 'Cancelled'">
+            
+            <!-- Card Top: Status badge + ID -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted small fw-bold">#{{ v.visitId }}</span>
+              <span class="pt-badge"
+                [class.bg-primary-subtle]="v.status === 'Scheduled'"
+                [class.text-primary]="v.status === 'Scheduled'"
+                [class.bg-success-subtle]="v.status === 'Completed'"
+                [class.text-success]="v.status === 'Completed'"
+                [class.bg-danger-subtle]="v.status === 'Cancelled'"
+                [class.text-danger]="v.status === 'Cancelled'">
+                {{ v.status || 'Scheduled' }}
+              </span>
+            </div>
+
+            <!-- Lead & Broker -->
+            <div class="d-flex align-items-center justify-content-between mb-4 bg-light p-3 rounded">
+              <div class="d-flex align-items-center gap-3">
+                <div class="pt-avatar bg-primary text-white">
+                  {{ getLeadName(v.leadId).toString().charAt(0) }}
+                </div>
+                <div>
+                  <div class="fw-bold text-dark">{{ getLeadName(v.leadId) }}</div>
+                  <div class="text-muted small">Buyer</div>
+                </div>
+              </div>
+              <div class="text-muted"><span class="material-symbols-rounded">sync_alt</span></div>
+              <div class="d-flex align-items-center gap-3 text-end">
+                <div>
+                  <div class="fw-bold text-dark">{{ getBrokerName(v.brokerId) }}</div>
+                  <div class="text-muted small">Broker</div>
+                </div>
+                <div class="pt-avatar bg-secondary text-white">
+                  {{ getBrokerName(v.brokerId).toString().charAt(0) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column gap-2 mb-4 flex-grow-1">
+              <!-- Property -->
+              <div class="d-flex align-items-center gap-2 text-dark fw-medium">
+                <span class="material-symbols-rounded text-primary fs-5">apartment</span>
+                {{ getPropertyName(v.propertyId) }}
+              </div>
+              <!-- Date -->
+              <div class="d-flex align-items-center gap-2 text-muted">
+                <span class="material-symbols-rounded fs-5">event</span>
+                {{ v.visitDate | date:'EEE, MMM d, y – h:mm a' }}
+              </div>
+              
+              <div class="d-flex align-items-center gap-3 mt-2">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-symbols-rounded text-warning fs-5" *ngFor="let _ of [].constructor(v.clientRating || 0)">star</span>
+                  <span class="material-symbols-rounded text-muted fs-5 opacity-25" *ngFor="let _ of [].constructor(5 - (v.clientRating || 0))">star</span>
+                </div>
+                <span class="pt-badge"
+                  [class.bg-success-subtle]="v.feedbackStatus === 'Interested'"
+                  [class.text-success]="v.feedbackStatus === 'Interested'"
+                  [class.bg-danger-subtle]="v.feedbackStatus === 'Not Interested'"
+                  [class.text-danger]="v.feedbackStatus === 'Not Interested'"
+                  [class.bg-warning-subtle]="v.feedbackStatus === 'Needs Refinement'"
+                  [class.text-warning]="v.feedbackStatus === 'Needs Refinement'"
+                  [class.bg-secondary-subtle]="v.feedbackStatus === 'Pending' || !v.feedbackStatus"
+                  [class.text-secondary]="v.feedbackStatus === 'Pending' || !v.feedbackStatus">
+                  {{ v.feedbackStatus || 'Pending' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Notes / Feedback -->
+            <div class="bg-light p-3 rounded mb-4" *ngIf="v.clientFeedback || v.notes">
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-start gap-2 text-dark small" *ngIf="v.clientFeedback">
+                  <span class="material-symbols-rounded text-success fs-6 mt-1">forum</span>
+                  <span>{{ v.clientFeedback }}</span>
+                </div>
+                <div class="d-flex align-items-start gap-2 text-muted small" *ngIf="v.notes">
+                  <span class="material-symbols-rounded fs-6 mt-1">push_pin</span>
+                  <span>{{ v.notes }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="d-flex gap-2 mt-auto border-top pt-3">
+              <button class="pt-btn pt-btn-outline flex-grow-1" (click)="editVisit(v)">
+                <span class="material-symbols-rounded fs-5">edit</span> Edit
+              </button>
+              <button class="pt-btn pt-btn-outline text-danger flex-grow-1" (click)="deleteVisit(v.visitId!)">
+                <span class="material-symbols-rounded fs-5">delete</span> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredVisits.length === 0" class="pt-empty-state">
+        <div class="pt-empty-icon bg-primary-subtle text-primary">
+          <span class="material-symbols-rounded">calendar_month</span>
+        </div>
+        <h4>No visits found</h4>
+        <p class="text-muted">{{ visits.length === 0 ? 'Start by scheduling your first site visit.' : 'Try adjusting your filters.' }}</p>
+        <button *ngIf="visits.length > 0" class="pt-btn pt-btn-outline mt-3" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <!-- Sidebar Form -->
+    <div class="layout-sidebar pt-card p-0" *ngIf="showForm">
+      <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-light">
+        <h5 class="mb-0 d-flex align-items-center gap-2">
+          <span class="material-symbols-rounded text-primary">{{ editing ? 'edit_square' : 'add_circle' }}</span>
+          {{ editing ? 'Update Visit' : 'Schedule Visit' }}
+        </h5>
+        <button class="pt-btn pt-btn-text p-1" (click)="toggleForm()">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+
+      <div class="p-4">
+        <form (ngSubmit)="saveVisit()" class="d-flex flex-column gap-4">
+          <!-- Broker -->
+          <div class="form-group">
+            <label class="pt-label">Field Broker Agent <span class="text-danger">*</span></label>
+            <select class="pt-input w-100" [(ngModel)]="visit.brokerId" name="brokerId" required>
+              <option [ngValue]="0">— Select Broker —</option>
+              <option *ngFor="let b of brokers" [ngValue]="b.brokerId">
+                {{ b.firstName }} {{ b.lastName }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Lead -->
+          <div class="form-group">
+            <label class="pt-label">Buyer Client / Lead <span class="text-danger">*</span></label>
+            <select class="pt-input w-100" [(ngModel)]="visit.leadId" (ngModelChange)="onLeadChange()" name="leadId" required>
+              <option [ngValue]="0">— Select Lead —</option>
+              <option *ngFor="let l of leads" [ngValue]="l.leadId">
+                {{ l.customerName }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Property -->
+          <div class="form-group">
+            <label class="pt-label">Target Property <span class="text-danger">*</span></label>
+            <select class="pt-input w-100" [(ngModel)]="visit.propertyId" name="propertyId" required>
+              <option [ngValue]="0">— Select Property —</option>
+              <option *ngFor="let p of properties" [ngValue]="p.propertyId">
+                {{ p.propertyName }} ({{ p.location }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="form-group">
+            <label class="pt-label">Visit Date & Time <span class="text-danger">*</span></label>
+            <input type="datetime-local" [(ngModel)]="visit.visitDate" name="visitDate" class="pt-input w-100" required />
+          </div>
+
+          <div class="row g-3">
+            <!-- Status -->
+            <div class="col-6">
+              <label class="pt-label">Visit Status</label>
+              <select class="pt-input w-100" [(ngModel)]="visit.status" name="status">
+                <option value="Scheduled">Scheduled</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <!-- Feedback Status -->
+            <div class="col-6">
+              <label class="pt-label">Outcome</label>
+              <select class="pt-input w-100" [(ngModel)]="visit.feedbackStatus" name="feedbackStatus">
+                <option value="Pending">Pending</option>
+                <option value="Interested">Interested</option>
+                <option value="Not Interested">Not Interested</option>
+                <option value="Needs Refinement">Needs Refinement</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="form-group">
+            <label class="pt-label">Buyer Interest Rating</label>
+            <select class="pt-input w-100" [(ngModel)]="visit.clientRating" name="clientRating">
+              <option [ngValue]="5">⭐⭐⭐⭐⭐ Excellent</option>
+              <option [ngValue]="4">⭐⭐⭐⭐ Good</option>
+              <option [ngValue]="3">⭐⭐⭐ Neutral</option>
+              <option [ngValue]="2">⭐⭐ Fair</option>
+              <option [ngValue]="1">⭐ Disliked</option>
+            </select>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label class="pt-label">Scheduling Notes</label>
+            <textarea [(ngModel)]="visit.notes" name="notes" class="pt-input w-100" rows="2" placeholder="e.g. Meet at property gate"></textarea>
+          </div>
+
+          <!-- Client Feedback -->
+          <div class="form-group">
+            <label class="pt-label">Buyer Feedback Notes</label>
+            <textarea [(ngModel)]="visit.clientFeedback" name="clientFeedback" class="pt-input w-100" rows="3" placeholder="e.g. Liked balcony view, Price too high"></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="d-flex flex-column gap-2 mt-4 pt-4 border-top">
+            <button type="submit" class="pt-btn pt-btn-primary w-100"
+              [disabled]="!visit.visitDate || visit.brokerId <= 0 || visit.leadId <= 0 || visit.propertyId <= 0">
+              <span class="material-symbols-rounded fs-5">save</span>
+              {{ editing ? 'Update Visit' : 'Save Visit Schedule' }}
+            </button>
+            <button type="button" class="pt-btn pt-btn-outline pt-btn-success w-100"
+              (click)="generateConfirmationMessage()"
+              [disabled]="!visit.visitDate || visit.brokerId <= 0 || visit.leadId <= 0 || visit.propertyId <= 0">
+              <span class="material-symbols-rounded fs-5">chat</span>
+              Generate Notification
+            </button>
+            <button type="button" class="pt-btn pt-btn-text w-100" (click)="resetForm()">
+              Clear Form
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

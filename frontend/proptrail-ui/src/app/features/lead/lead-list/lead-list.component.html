@@ -1,0 +1,428 @@
+<div class="lead-container page-enter">
+
+  <!-- ── Page Header ────────────────── -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">Buyer Leads</h2>
+      <p class="page-subtitle">Track preferences, qualify budgets, and match buyer inquiries with inventory</p>
+    </div>
+    <div class="dash-header-actions">
+      <button class="pt-btn pt-btn-primary" (click)="showForm = !showForm">
+        <span class="material-symbols-outlined">{{ showForm ? 'close' : 'person_add' }}</span>
+        {{ showForm ? 'Hide Form' : 'Register New Lead' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Collapsible Lead Form ──────── -->
+  <div class="pt-card form-card mb-4" *ngIf="showForm">
+    <div class="pt-card-header">
+      <span class="section-title text-primary">
+        <span class="material-symbols-outlined icon-sm" style="vertical-align: text-bottom; margin-right: 4px;">
+          {{ isEditMode ? 'edit_square' : 'add_box' }}
+        </span>
+        {{ isEditMode ? 'Update Inquiry Lead' : 'Register New Buyer Lead' }}
+      </span>
+      <span class="pt-badge" [class.badge-primary]="!isEditMode" [class.badge-warning]="isEditMode">
+        {{ isEditMode ? 'Editing Mode' : 'Lead Qualification' }}
+      </span>
+    </div>
+    <div class="pt-card-body">
+      <form (submit)="addLead(); $event.preventDefault()">
+        <div class="form-grid">
+          <!-- Client Details Group -->
+          <div class="form-section">
+            <h4 class="form-section-title">Client Information</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Customer Name</label>
+              <input type="text" class="pt-input" placeholder="e.g. Chirag Amin" [(ngModel)]="lead.customerName" name="customerName" required>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Mobile Number</label>
+              <div class="input-prefix-wrapper">
+                <span class="input-prefix">+91</span>
+                <input type="text" class="pt-input pt-input-prefix" placeholder="10-digit phone" maxlength="10" [(ngModel)]="lead.mobile" name="mobile" required>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Email Address</label>
+              <input type="email" class="pt-input" placeholder="e.g. chirag@example.com" [(ngModel)]="lead.email" name="email">
+            </div>
+          </div>
+
+          <!-- Preferences Group -->
+          <div class="form-section">
+            <h4 class="form-section-title">Housing Preferences</h4>
+            <div class="form-row mb-3">
+              <div class="form-group col">
+                <label class="pt-field-label">Preferred BHK</label>
+                <select class="pt-select" [(ngModel)]="lead.preferredBhk" name="preferredBhk">
+                  <option [ngValue]="null">Any BHK</option>
+                  <option [ngValue]="0">Commercial (N/A)</option>
+                  <option [ngValue]="1">1 BHK</option>
+                  <option [ngValue]="2">2 BHK</option>
+                  <option [ngValue]="3">3 BHK</option>
+                  <option [ngValue]="4">4 BHK</option>
+                </select>
+              </div>
+              <div class="form-group col">
+                <label class="pt-field-label">Readiness</label>
+                <select class="pt-select" [(ngModel)]="lead.propertyStatusPreference" name="propertyStatusPreference">
+                  <option value="">Any Status</option>
+                  <option value="ReadyToMove">Ready to Move</option>
+                  <option value="UnderConstruction">Under Construction</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Preferred Locality</label>
+              <input type="text" class="pt-input" placeholder="e.g. Bandra, Andheri" [(ngModel)]="lead.preferredLocality" name="preferredLocality">
+            </div>
+            <div class="form-row mb-3">
+              <div class="form-group col">
+                <label class="pt-field-label">Min Budget (₹)</label>
+                <input type="number" class="pt-input" placeholder="e.g. 5,000,000" [(ngModel)]="lead.minBudget" name="minBudget">
+              </div>
+              <div class="form-group col">
+                <label class="pt-field-label">Max Budget (₹)</label>
+                <input type="number" class="pt-input" placeholder="e.g. 9,000,000" [(ngModel)]="lead.maxBudget" name="maxBudget">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pipeline Group -->
+          <div class="form-section">
+            <h4 class="form-section-title">Pipeline &amp; Status</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Inquiry Status</label>
+              <select class="pt-select" [(ngModel)]="lead.status" name="status">
+                <option value="New">New</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Priority Level</label>
+              <select class="pt-select" [(ngModel)]="lead.priorityTag" name="priorityTag">
+                <option value="Hot">🔥 Hot</option>
+                <option value="Warm">☀️ Warm</option>
+                <option value="Cold">❄️ Cold</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Last Contacted Date</label>
+              <input type="date" class="pt-input" [(ngModel)]="lead.lastContactedDate" name="lastContactedDate">
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Notes Row -->
+        <div class="form-group mt-3">
+          <label class="pt-field-label">Interested Property / Additional Notes</label>
+          <textarea class="pt-input" rows="2" placeholder="e.g. Needs high floors, vastu-compliant, park facing, corner flat" [(ngModel)]="lead.interestedProperty" name="interestedProperty"></textarea>
+        </div>
+
+        <div class="form-actions mt-4 justify-content-end">
+          <button type="button" class="pt-btn pt-btn-secondary" (click)="resetForm()">
+            Clear Form
+          </button>
+          <button type="submit" class="pt-btn pt-btn-primary">
+            <span class="material-symbols-outlined icon-sm">check_circle</span>
+            {{ isEditMode ? 'Update Client' : 'Add Buyer Lead' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Advanced Filter Bar ────────── -->
+  <div class="pt-card filter-card mb-4">
+    <div class="pt-card-body filter-body">
+      <div class="filter-inputs">
+        <div class="filter-group search-group">
+          <span class="material-symbols-outlined input-icon">search</span>
+          <input type="text" class="pt-input search-field" placeholder="Search by name, email, mobile..." [(ngModel)]="searchQuery" (input)="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
+            <option value="">All Statuses</option>
+            <option value="New">New</option>
+            <option value="Contacted">Contacted</option>
+            <option value="Site Visit Scheduled">Site Visit Scheduled</option>
+            <option value="Negotiation">Negotiation</option>
+            <option value="Closed">Closed</option>
+            <option value="Lost">Lost</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="filterPriority" (change)="applyFilters()">
+            <option value="">All Priorities</option>
+            <option value="Hot">🔥 Hot</option>
+            <option value="Warm">☀️ Warm</option>
+            <option value="Cold">❄️ Cold</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="sortField" (change)="applyFilters()">
+            <option value="customerName">Sort: Name</option>
+            <option value="status">Sort: Status</option>
+            <option value="priorityTag">Sort: Priority</option>
+          </select>
+        </div>
+
+        <button class="pt-btn pt-btn-secondary" (click)="searchQuery=''; filterStatus=''; filterPriority=''; applyFilters()">
+          <span class="material-symbols-outlined icon-sm">filter_alt_off</span>
+          Clear
+        </button>
+      </div>
+
+      <div class="filter-summary-row mt-3">
+        <span class="small-info">Showing <strong>{{ filteredLeads.length }}</strong> of <strong>{{ leads.length }}</strong> qualified leads</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Leads Table / Grid ────────── -->
+  <div class="pt-table-wrapper">
+    <div class="table-scroll-container">
+      <table class="pt-table">
+        <thead>
+          <tr>
+            <th class="ps-4">ID</th>
+            <th (click)="toggleSort('customerName')" class="cursor-pointer">
+              Client Info
+              <span class="material-symbols-outlined icon-sm align-middle" *ngIf="sortField === 'customerName'">
+                {{ sortAsc ? 'arrow_upward' : 'arrow_downward' }}
+              </span>
+            </th>
+            <th>BHK Preference</th>
+            <th>Locality & Readiness</th>
+            <th>Budget Bracket</th>
+            <th (click)="toggleSort('priorityTag')" class="cursor-pointer">
+              Priority
+              <span class="material-symbols-outlined icon-sm align-middle" *ngIf="sortField === 'priorityTag'">
+                {{ sortAsc ? 'arrow_upward' : 'arrow_downward' }}
+              </span>
+            </th>
+            <th (click)="toggleSort('status')" class="cursor-pointer">
+              Status
+              <span class="material-symbols-outlined icon-sm align-middle" *ngIf="sortField === 'status'">
+                {{ sortAsc ? 'arrow_upward' : 'arrow_downward' }}
+              </span>
+            </th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let l of paginatedLeads">
+            <td class="ps-4 text-muted fw-bold">PT-L{{ l.id }}</td>
+            <td>
+              <div class="client-avatar-row">
+                <div class="pt-avatar small-avatar" [style.background]="'linear-gradient(135deg, #eff6ff, #dbeafe)'" style="color: #2563eb;">
+                  {{ l.customerName.charAt(0) }}
+                </div>
+                <div>
+                  <div class="fw-700 text-dark">{{ l.customerName }}</div>
+                  <div class="text-muted small d-flex align-items-center gap-1 mt-0.5">
+                    <span class="material-symbols-outlined icon-sm">call</span>
+                    +91 {{ l.mobile }}
+                  </div>
+                  <div class="text-muted small d-flex align-items-center gap-1" *ngIf="l.email">
+                    <span class="material-symbols-outlined icon-sm">mail</span>
+                    {{ l.email }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="pt-badge badge-neutral">{{ l.preferredBhk === 0 ? 'Commercial' : (l.preferredBhk ? l.preferredBhk + ' BHK' : 'Any BHK') }}</span>
+              <div class="notes-preview mt-1" *ngIf="l.interestedProperty" title="{{ l.interestedProperty }}">
+                <strong>Note:</strong> {{ l.interestedProperty }}
+              </div>
+            </td>
+            <td>
+              <div class="fw-600 text-dark">{{ l.preferredLocality || 'Any Locality' }}</div>
+              <span class="pt-badge mt-1"
+                [ngClass]="{
+                  'badge-accent': l.propertyStatusPreference === 'ReadyToMove',
+                  'badge-neutral': l.propertyStatusPreference === 'UnderConstruction',
+                  'badge-dark': !l.propertyStatusPreference
+                }">
+                {{ l.propertyStatusPreference === 'ReadyToMove' ? 'Ready' : l.propertyStatusPreference === 'UnderConstruction' ? 'Construction' : 'Any Readiness' }}
+              </span>
+            </td>
+            <td>
+              <div class="fw-700 text-primary" *ngIf="l.minBudget || l.maxBudget">
+                {{ l.minBudget ? '₹' + (l.minBudget / 100000).toFixed(0) + 'L' : '0' }} -
+                {{ l.maxBudget ? '₹' + (l.maxBudget / 100000).toFixed(0) + 'L' : 'Max' }}
+              </div>
+              <div class="text-muted small" *ngIf="!l.minBudget && !l.maxBudget">Any Budget</div>
+            </td>
+            <td>
+              <span class="pt-badge"
+                [ngClass]="{
+                  'badge-danger': l.priorityTag === 'Hot',
+                  'badge-warning': l.priorityTag === 'Warm',
+                  'badge-neutral': l.priorityTag === 'Cold' || !l.priorityTag
+                }">
+                {{ l.priorityTag || 'Warm' }}
+              </span>
+            </td>
+            <td>
+              <span class="pt-badge rounded-pill"
+                [ngClass]="{
+                  'badge-success': l.status === 'Closed',
+                  'badge-primary': l.status === 'Contacted',
+                  'badge-warning': l.status === 'New',
+                  'badge-neutral': !l.status
+                }">
+                {{ l.status || 'New' }}
+              </span>
+            </td>
+            <td class="text-end pe-4">
+              <div class="actions-btn-group">
+                <!-- Smart Property Matcher -->
+                <button type="button" class="pt-btn pt-btn-success pt-btn-sm" (click)="showPropertyMatches(l)" title="Run Property Matcher">
+                  <span class="material-symbols-outlined icon-sm">query_stats</span>
+                  Match
+                </button>
+                <a [routerLink]="['/lead', l.id]" class="pt-btn pt-btn-primary pt-btn-sm" title="View Details">
+                  <span class="material-symbols-outlined icon-sm">visibility</span>
+                  Details
+                </a>
+                <button type="button" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" (click)="editLead(l)" title="Edit Profile">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button type="button" class="pt-btn pt-btn-danger pt-btn-sm pt-btn-icon" (click)="deleteLead(l.id)" title="Remove Lead">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredLeads.length === 0">
+            <td colspan="8" class="text-center p-5">
+              <div class="empty-state py-4">
+                <span class="material-symbols-outlined empty-icon" style="font-size: 40px; color: #cbd5e1;">handshake</span>
+                <h4 class="fw-bold text-dark mb-1">No Leads Found</h4>
+                <p class="text-muted small mb-0">Modify search filters or add a new buyer query to get started.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div *ngIf="totalPages > 1" class="table-pagination-row">
+      <span class="small-info">Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong></span>
+      <div class="pagination-buttons">
+        <button class="pt-btn pt-btn-secondary pt-btn-sm" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button
+          *ngFor="let p of [].constructor(totalPages); let i = index"
+          class="pt-btn pt-btn-sm"
+          [class.pt-btn-primary]="currentPage === i + 1"
+          [class.pt-btn-secondary]="currentPage !== i + 1"
+          (click)="changePage(i + 1)">
+          {{ i + 1 }}
+        </button>
+        <button class="pt-btn pt-btn-secondary pt-btn-sm" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Property Matches Modal Overlay ── -->
+  <div *ngIf="selectedLeadForMatching" class="pt-modal-backdrop" (click)="closeMatchingModal()"></div>
+  <div *ngIf="selectedLeadForMatching" class="pt-modal-wrapper">
+    <div class="pt-modal pt-card">
+      <div class="pt-card-header pt-modal-header bg-dark text-white">
+        <div>
+          <span class="section-title text-white">Inventory Matcher</span>
+          <p class="text-muted small mb-0 text-white-50">Matches found for <strong>{{ selectedLeadForMatching.customerName }}</strong></p>
+        </div>
+        <button type="button" class="close-modal-btn" (click)="closeMatchingModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="pt-card-body pt-modal-body">
+        <!-- Lead Criteria Card -->
+        <div class="criteria-summary pt-card mb-4 bg-light">
+          <div class="criteria-header">MATCH CRITERIA</div>
+          <div class="criteria-grid">
+            <div class="crit-item">
+              <span class="crit-label">BHK:</span>
+              <span class="pt-badge badge-primary">{{ selectedLeadForMatching.preferredBhk === 0 ? 'Commercial' : (selectedLeadForMatching.preferredBhk ? selectedLeadForMatching.preferredBhk + ' BHK' : 'Any') }}</span>
+            </div>
+            <div class="crit-item">
+              <span class="crit-label">Locality:</span>
+              <span class="pt-badge badge-accent">{{ selectedLeadForMatching.preferredLocality || 'Any' }}</span>
+            </div>
+            <div class="crit-item">
+              <span class="crit-label">Budget:</span>
+              <span class="pt-badge badge-success">
+                {{ selectedLeadForMatching.minBudget ? '₹' + (selectedLeadForMatching.minBudget / 100000).toFixed(0) + 'L' : '0' }} -
+                {{ selectedLeadForMatching.maxBudget ? '₹' + (selectedLeadForMatching.maxBudget / 100000).toFixed(0) + 'L' : 'Max' }}
+              </span>
+            </div>
+            <div class="crit-item">
+              <span class="crit-label">Readiness:</span>
+              <span class="pt-badge badge-dark">
+                {{ selectedLeadForMatching.propertyStatusPreference === 'ReadyToMove' ? 'Ready' : selectedLeadForMatching.propertyStatusPreference === 'UnderConstruction' ? 'Construction' : 'Any' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="matches-count-heading mb-3">Matching Listings ({{ matchedProperties.length }})</h4>
+
+        <!-- Property Matches Grid -->
+        <div class="properties-matches-container">
+          <div *ngIf="matchedProperties.length === 0" class="no-matches-found text-center py-4">
+            <span class="material-symbols-outlined text-muted" style="font-size: 36px;">search_off</span>
+            <p class="text-muted mt-2 mb-0">No properties in the inventory currently meet the lead's exact preferences.</p>
+          </div>
+
+          <div class="matches-grid" *ngIf="matchedProperties.length > 0">
+            <div *ngFor="let p of matchedProperties" class="pt-card match-property-card hoverable">
+              <div class="match-prop-header">
+                <span class="pt-badge badge-neutral">PT-P{{ p.id }}</span>
+                <span class="pt-badge badge-success">{{ p.status }}</span>
+              </div>
+              <div class="match-prop-content">
+                <h4 class="match-prop-name">{{ p.propertyName }}</h4>
+                <div class="match-prop-meta text-muted">
+                  <span class="material-symbols-outlined icon-sm">apartment</span>
+                  {{ p.propertyType }}
+                </div>
+                <div class="match-prop-meta text-muted">
+                  <span class="material-symbols-outlined icon-sm">pin_drop</span>
+                  {{ p.location }}
+                </div>
+                <div class="match-prop-meta text-muted">
+                  <span class="material-symbols-outlined icon-sm">{{ p.bhkCount === 0 ? 'business' : 'bed' }}</span>
+                  {{ p.bhkCount === 0 ? 'Commercial' : p.bhkCount + ' BHK' }}
+                </div>
+              </div>
+              <div class="match-prop-price-footer">
+                <span class="price-title">Listing Price</span>
+                <span class="price-value">₹{{ (p.price / 100000).toFixed(1) }} Lakh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-card-header pt-modal-footer mt-auto justify-content-end" style="border-top:1px solid #f1f5f9; border-bottom: none;">
+        <button type="button" class="pt-btn pt-btn-secondary px-4" (click)="closeMatchingModal()">Close Dialog</button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,74 @@
+<div class="my-deals-container page-enter">
+
+  <!-- Header -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">My Purchase Transactions</h2>
+      <p class="page-subtitle">Track your ongoing transactions, contract status, and milestone completion stages</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="deals.length === 0" class="empty-state pt-card p-5 text-center">
+    <span class="material-symbols-outlined empty-icon" style="font-size: 64px; color: #cbd5e1;">handshake</span>
+    <h3 class="mt-3">No Active Deals</h3>
+    <p class="text-muted">You do not have any property sales or leases in progress right now. Explore properties or get in touch with our team to start a transaction.</p>
+    <a href="/property" class="pt-btn pt-btn-primary mt-2">Explore Properties</a>
+  </div>
+
+  <!-- Deals List -->
+  <div class="deals-list d-flex flex-column gap-4" *ngIf="deals.length > 0">
+    <div class="pt-card deal-card shadow-sm" *ngFor="let d of deals">
+      <div class="pt-card-header d-flex justify-content-between align-items-center">
+        <div>
+          <span class="pt-badge badge-primary mr-2">{{ d.status || 'Open' }}</span>
+          <span class="small text-muted fw-bold">Deal ID: PT-D{{ d.dealId }}</span>
+        </div>
+        <h4 class="text-primary fw-800 m-0">₹{{ (d.dealAmount / 100000).toFixed(1) }} L</h4>
+      </div>
+
+      <div class="pt-card-body p-4">
+        <!-- Property Info Summary -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5 class="fw-bold text-slate-800 mb-1">{{ d.property?.propertyName }}</h5>
+            <p class="text-muted small d-flex align-items-center gap-1 mb-0">
+              <span class="material-symbols-outlined icon-sm">pin_drop</span>
+              {{ d.property?.location }}
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end mt-2 mt-md-0">
+            <span class="small text-muted d-block uppercase-label">Agreement Date</span>
+            <span class="fw-bold text-slate-700">{{ (d.dealDate | date:'mediumDate') || 'TBD' }}</span>
+          </div>
+        </div>
+
+        <!-- Deal Stage Stepper Tracker -->
+        <div class="deal-stepper-wrapper mt-3">
+          <label class="uppercase-label text-muted small fw-bold mb-3 d-block">Transaction Milestones</label>
+          
+          <div class="stepper-horizontal">
+            <div class="stepper-bar">
+              <div class="stepper-fill" [style.width.%]="getStagePercentage(d.stage)"></div>
+            </div>
+            
+            <div class="stepper-steps-container">
+              <div class="stepper-step" 
+                   *ngFor="let stage of stagesList; let i = index"
+                   [class.completed]="stagesList.indexOf(d.stage) >= i"
+                   [class.current]="d.stage === stage">
+                <div class="step-icon">
+                  <span class="material-symbols-outlined icon-sm" *ngIf="stagesList.indexOf(d.stage) > i">check</span>
+                  <span class="number" *ngIf="stagesList.indexOf(d.stage) <= i">{{ i + 1 }}</span>
+                </div>
+                <div class="step-label mt-2">{{ stage }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

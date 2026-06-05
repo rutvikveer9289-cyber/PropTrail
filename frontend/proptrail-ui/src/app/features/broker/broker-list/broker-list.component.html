@@ -1,0 +1,182 @@
+<div class="broker-container page-enter">
+
+  <!-- ── Page Header ────────────────── -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">Brokers Directory</h2>
+      <p class="page-subtitle">Manage, add, and monitor real estate agent partners in the PropTrail network</p>
+    </div>
+  </div>
+
+  <!-- ── Top Action & Search Bar ────── -->
+  <div class="broker-search-bar mb-4">
+    <div class="search-input-wrapper">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search brokers by name, phone, or email..."
+        class="pt-input search-field">
+      <button *ngIf="searchQuery" (click)="searchQuery = ''" class="clear-search-btn">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="quick-stats-badge">
+      <span class="material-symbols-outlined">groups</span>
+      <span class="stats-text"><strong>{{ brokers.length }}</strong> Total Brokers</span>
+    </div>
+  </div>
+
+  <!-- ── Split Workspace ────────────── -->
+  <div class="broker-workspace">
+
+    <!-- Left: Brokers Directory Grid -->
+    <div class="directory-column">
+      <div *ngIf="filteredBrokers.length === 0" class="empty-state pt-card">
+        <span class="material-symbols-outlined empty-icon">groups_off</span>
+        <h3>No Brokers Found</h3>
+        <p *ngIf="searchQuery">No brokers match your search criteria. Try a different query.</p>
+        <p *ngIf="!searchQuery">Your broker list is currently empty. Add your first broker on the right.</p>
+      </div>
+
+      <div class="broker-grid" *ngIf="filteredBrokers.length > 0">
+        <div *ngFor="let b of filteredBrokers" class="pt-card broker-card hoverable">
+          <div class="broker-card-top">
+            <div class="pt-avatar broker-avatar" [style.background]="'linear-gradient(135deg, #eff6ff, #bfdbfe)'">
+              {{ b.firstName.charAt(0) }}{{ b.lastName.charAt(0) }}
+            </div>
+            <div class="broker-status-tag">
+              <span class="pt-badge badge-success">Partner</span>
+            </div>
+          </div>
+
+          <div class="broker-card-info">
+            <h4 class="broker-name">{{ b.firstName }} {{ b.lastName }}</h4>
+            <span class="broker-id-label">ID: PT-B0{{ b.id }}</span>
+          </div>
+
+          <div class="broker-card-contacts">
+            <a href="tel:{{ b.mobile }}" class="contact-item" title="Call Broker">
+              <span class="material-symbols-outlined contact-icon">call</span>
+              <span class="contact-text">+91 {{ b.mobile }}</span>
+            </a>
+            <a href="mailto:{{ b.email }}" class="contact-item" title="Email Broker">
+              <span class="material-symbols-outlined contact-icon">mail</span>
+              <span class="contact-text">{{ b.email }}</span>
+            </a>
+          </div>
+
+          <div class="broker-card-actions">
+            <button
+              class="pt-btn pt-btn-secondary pt-btn-sm flex-grow-1"
+              (click)="editBroker(b)"
+              title="Edit Broker Details">
+              <span class="material-symbols-outlined icon-sm">edit</span>
+              Edit
+            </button>
+            <button
+              class="pt-btn pt-btn-danger pt-btn-sm"
+              (click)="deleteBroker(b.id)"
+              title="Remove Broker">
+              <span class="material-symbols-outlined icon-sm">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Add / Edit Form Card -->
+    <div class="form-column">
+      <div class="pt-card form-card">
+        <div class="pt-card-header">
+          <span class="section-title">
+            <span class="material-symbols-outlined icon-sm text-primary" style="vertical-align: text-bottom; margin-right: 4px;">
+              {{ isEditMode ? 'edit_square' : 'person_add' }}
+            </span>
+            {{ isEditMode ? 'Edit Broker Profile' : 'Add New Broker' }}
+          </span>
+          <span class="pt-badge" [class.badge-primary]="!isEditMode" [class.badge-warning]="isEditMode">
+            {{ isEditMode ? 'Editing' : 'New Agent' }}
+          </span>
+        </div>
+
+        <div class="pt-card-body">
+          <form (submit)="addBroker(); $event.preventDefault()" class="broker-form">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="pt-field-label">First Name</label>
+                <input
+                  type="text"
+                  class="pt-input"
+                  placeholder="e.g. Rahul"
+                  [(ngModel)]="broker.firstName"
+                  name="firstName"
+                  required>
+              </div>
+
+              <div class="form-group">
+                <label class="pt-field-label">Last Name</label>
+                <input
+                  type="text"
+                  class="pt-input"
+                  placeholder="e.g. Sharma"
+                  [(ngModel)]="broker.lastName"
+                  name="lastName"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="pt-field-label">Mobile Number</label>
+              <div class="input-prefix-wrapper">
+                <span class="input-prefix">+91</span>
+                <input
+                  type="text"
+                  class="pt-input pt-input-prefix"
+                  placeholder="10-digit mobile"
+                  maxlength="10"
+                  [(ngModel)]="broker.mobile"
+                  name="mobile"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="pt-field-label">Email Address</label>
+              <input
+                type="email"
+                class="pt-input"
+                placeholder="name@email.com"
+                [(ngModel)]="broker.email"
+                name="email"
+                required>
+            </div>
+
+            <div class="form-actions mt-4">
+              <button
+                type="button"
+                *ngIf="isEditMode"
+                class="pt-btn pt-btn-secondary"
+                (click)="cancelEdit()">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="pt-btn pt-btn-primary flex-grow-1">
+                <span class="material-symbols-outlined icon-sm">
+                  {{ isEditMode ? 'save' : 'add' }}
+                </span>
+                {{ isEditMode ? 'Save Changes' : 'Register Broker' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

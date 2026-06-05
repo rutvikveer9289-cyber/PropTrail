@@ -1,0 +1,67 @@
+<div class="my-documents-container page-enter">
+
+  <!-- Header -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">My Transaction Documents</h2>
+      <p class="page-subtitle">Securely view, verify, and download legal and financial documents related to your property purchases</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="documents.length === 0" class="empty-state pt-card p-5 text-center">
+    <span class="material-symbols-outlined empty-icon" style="font-size: 64px; color: #cbd5e1;">folder_off</span>
+    <h3 class="mt-3">No Documents Shared Yet</h3>
+    <p class="text-muted">Legal agreements, sale deeds, or KYC verification copies will appear here once uploaded by your coordinator/broker.</p>
+  </div>
+
+  <!-- Documents Hub Grid -->
+  <div class="row g-3" *ngIf="documents.length > 0">
+    <div class="col-md-6 col-lg-4" *ngFor="let doc of documents">
+      <div class="pt-card doc-card hoverable">
+        <div class="pt-card-header d-flex justify-content-between align-items-center">
+          <span class="pt-badge rounded-pill"
+            [ngClass]="{
+              'badge-success': doc.status === 'Verified',
+              'badge-warning': doc.status === 'Collected' || doc.status === 'Pending',
+              'badge-danger': doc.status === 'Rejected'
+            }">
+            {{ doc.status || 'Pending' }}
+          </span>
+          <span class="pt-badge badge-neutral small">{{ doc.category || 'General' }}</span>
+        </div>
+
+        <div class="pt-card-body">
+          <div class="d-flex align-items-start gap-2 mb-3">
+            <span class="material-symbols-outlined text-primary" style="font-size: 32px;">description</span>
+            <div>
+              <h5 class="fw-bold text-slate-800 mb-1" title="{{ doc.documentName }}">{{ doc.documentName }}</h5>
+              <div class="small text-muted">Size: {{ formatBytes(doc.fileSize) }}</div>
+            </div>
+          </div>
+
+          <div class="rounded p-2 bg-light mb-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <span class="small text-muted d-block uppercase-label">Uploaded Date</span>
+                <span class="small fw-semibold text-slate-700">{{ doc.uploadedDate | date:'mediumDate' }}</span>
+              </div>
+              <div class="col-6 text-end">
+                <span class="small text-muted d-block uppercase-label">Downloads</span>
+                <span class="small fw-semibold text-slate-700">{{ doc.downloadCount || 0 }} times</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-card-footer border-top-0 pt-0 d-flex justify-content-end">
+          <button class="pt-btn pt-btn-primary pt-btn-sm w-100" [disabled]="!doc.fileUrl" (click)="downloadFile(doc)">
+            <span class="material-symbols-outlined icon-sm">download</span>
+            Download File
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

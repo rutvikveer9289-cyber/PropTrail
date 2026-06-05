@@ -1,0 +1,237 @@
+<div class="login-wrapper container-fluid p-0 m-0">
+  <div class="row g-0 h-100">
+
+    <!-- Left Pane: Illustration & Content (Visible only on large devices) -->
+    <div
+      class="col-lg-7 d-none d-lg-flex flex-column justify-content-between p-5 text-white position-relative illustration-pane">
+      <div class="illustration-overlay"></div>
+
+      <!-- Brand header -->
+      <div class="d-flex align-items-center gap-3 position-relative z-3">
+        <img
+          [src]="companyLogoUrl"
+          alt="PropTrail"
+          class="app-logo">
+        <div>
+          <h2 class="fw-bold mb-0 text-white leading-tight d-flex align-items-center gap-2">
+            PropTrail <span class="brand-badge-crm">CRM</span>
+          </h2>
+          <p class="tagline-text mb-0 text-blue-400 small fw-bold">Find. Love. Own It.</p>
+        </div>
+      </div>
+
+      <!-- Center building SVG illustration -->
+      <div class="illustration-content d-flex flex-column align-items-center justify-content-center text-center my-auto position-relative z-3">
+        <svg class="building-svg mb-4" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25" />
+              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.05" />
+            </linearGradient>
+            <linearGradient id="buildingGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.1" />
+            </linearGradient>
+            <linearGradient id="buildingGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#2563eb" stop-opacity="0.1" />
+            </linearGradient>
+            <linearGradient id="buildingGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#93c5fd" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.1" />
+            </linearGradient>
+          </defs>
+
+          <!-- Sky background circle/glow -->
+          <circle cx="400" cy="250" r="220" fill="url(#skyGrad)" />
+
+          <!-- Ground line -->
+          <line x1="100" y1="450" x2="700" y2="450" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+
+          <!-- Back buildings -->
+          <rect x="230" y="240" width="70" height="210" fill="url(#buildingGrad3)" opacity="0.5" />
+          <rect x="500" y="200" width="80" height="250" fill="url(#buildingGrad3)" opacity="0.5" />
+
+          <!-- Middle buildings -->
+          <rect x="180" y="180" width="90" height="270" fill="url(#buildingGrad1)" rx="4" />
+          <!-- Window details on building 1 -->
+          <line x1="205" y1="210" x2="205" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.3" />
+          <line x1="225" y1="210" x2="225" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.3" />
+          <line x1="245" y1="210" x2="245" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.3" />
+
+          <rect x="420" y="150" width="110" height="300" fill="url(#buildingGrad1)" rx="4" />
+          <!-- Window details on building 3 -->
+          <line x1="450" y1="180" x2="450" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 10" opacity="0.3" />
+          <line x1="475" y1="180" x2="475" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 10" opacity="0.3" />
+          <line x1="500" y1="180" x2="500" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 10" opacity="0.3" />
+
+          <!-- Front prominent buildings -->
+          <rect x="290" y="100" width="100" height="350" fill="url(#buildingGrad2)" rx="6" />
+          <!-- Decorative top -->
+          <rect x="330" y="70" width="20" height="30" fill="url(#buildingGrad2)" />
+          <line x1="340" y1="70" x2="340" y2="40" stroke="#60a5fa" stroke-width="2" opacity="0.8" />
+          <!-- Window details on middle tower -->
+          <line x1="315" y1="130" x2="315" y2="420" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 12" opacity="0.4" />
+          <line x1="340" y1="130" x2="340" y2="420" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 12" opacity="0.4" />
+          <line x1="365" y1="130" x2="365" y2="420" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 12" opacity="0.4" />
+
+          <rect x="560" y="220" width="80" height="230" fill="url(#buildingGrad2)" rx="4" />
+          <!-- Window details on building 5 -->
+          <line x1="585" y1="250" x2="585" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.3" />
+          <line x1="615" y1="250" x2="615" y2="420" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.3" />
+        </svg>
+
+        <h2 class="fw-bold mb-3 slogan-title">Accelerate Your Real Estate Pipeline</h2>
+        <p class="text-white-50 max-width-text fs-5 mb-4">
+          PropTrail helps independent brokers capture buyer requirements, map matches, plan site visits, and close deals securely.
+        </p>
+
+        <!-- Features highlights -->
+        <div class="features-list d-flex flex-column gap-3 align-items-start">
+          <div class="d-flex align-items-center gap-3">
+            <span class="feature-check-icon">✓</span>
+            <span class="text-slate-200 fs-6">Lead Management</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="feature-check-icon">✓</span>
+            <span class="text-slate-200 fs-6">Property Matching</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="feature-check-icon">✓</span>
+            <span class="text-slate-200 fs-6">Site Visit Tracking</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="feature-check-icon">✓</span>
+            <span class="text-slate-200 fs-6">Deal Closure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer credits -->
+      <div class="illustration-footer position-relative z-3 d-flex justify-content-between align-items-center w-100">
+        <p class="small text-white-50 mb-0">© 2026 PropTrail CRM System. All rights reserved.</p>
+        <span class="badge rounded-pill bg-slate-950 border border-slate-800 text-blue-400 small px-2.5 py-1">v2.4.0-release</span>
+      </div>
+    </div>
+
+    <!-- Right Pane: Login Card -->
+    <div class="col-12 col-lg-5 d-flex align-items-center justify-content-center p-4 p-md-5 bg-gradient-right">
+      <div class="card login-card shadow-lg border-0 p-4 p-md-5">
+
+        <!-- Mobile brand header -->
+        <div class="d-flex d-lg-none flex-column align-items-center justify-content-center gap-2 mb-4">
+          <img
+            [src]="companyLogoUrl"
+            alt="PropTrail"
+            class="mobile-logo mb-1">
+          <div class="text-center">
+            <h2 class="fw-bold mb-0 text-white leading-tight d-flex align-items-center justify-content-center gap-2">
+              PropTrail <span class="brand-badge-crm">CRM</span>
+            </h2>
+            <p class="tagline-text mb-0 small fw-bold">Find. Love. Own It.</p>
+          </div>
+        </div>
+
+        <!-- Welcome text -->
+        <div class="text-start mb-4">
+          <h3 class="fw-bold text-white mb-1">Welcome Back</h3>
+          <p class="text-slate-400 small mb-0">Please sign in with your corporate credentials</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()">
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="alert alert-danger border-0 p-3 small mb-4 rounded-3 text-center">
+            ⚠️ {{ errorMessage }}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label text-slate-300 fw-semibold small">Work Email</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">✉️</span>
+              <input type="email" [(ngModel)]="email" name="email" class="form-control border-start-0 ps-0"
+                placeholder="e.g. broker@proptrail.com" required />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-4">
+            <label class="form-label text-slate-300 fw-semibold small">Password</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">🔑</span>
+              <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                class="form-control border-start-0 border-end-0 ps-0" placeholder="••••••••" required />
+              <button type="button"
+                class="input-group-text bg-transparent border-start-0 text-muted password-toggle-btn"
+                (click)="showPassword = !showPassword" [title]="showPassword ? 'Hide password' : 'Show password'">
+                <span class="material-symbols-outlined" style="font-size: 20px; line-height: 1;">
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="rememberMe" name="rememberMe"
+                id="rememberMe">
+              <label class="form-check-label small text-slate-400" for="rememberMe">
+                Remember Me
+              </label>
+            </div>
+            <a href="javascript:void(0)" class="small fw-semibold text-primary text-decoration-none"
+              (click)="forgotPassword()">Forgot Password?</a>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm rounded-3 submit-btn mb-2"
+            [disabled]="isLoading">
+            {{ isLoading ? 'Signing In...' : 'Sign In' }}
+          </button>
+
+          <!-- Registration Link -->
+          <div class="text-center mb-4">
+            <span class="small text-slate-400">New Buyer? </span>
+            <a routerLink="/register" class="small fw-bold text-primary text-decoration-none">Create a Portal
+              Account</a>
+          </div>
+        </form>
+
+        <!-- Quick access demo roles -->
+        <div class="quick-login-section mt-3 pt-4">
+          <div class="text-center mb-3">
+            <span class="text-slate-400 small fw-bold uppercase-label">⚡ Demo Accounts Quick Login</span>
+          </div>
+          <div class="row g-2">
+            <div class="col-4">
+              <button type="button" class="btn btn-sm btn-outline-primary w-100 rounded-3 py-2 fw-semibold"
+                (click)="quickFill('Owner')">
+                Owner
+              </button>
+            </div>
+            <div class="col-4">
+              <button type="button" class="btn btn-sm btn-outline-success w-100 rounded-3 py-2 fw-semibold"
+                (click)="quickFill('Broker')">
+                Broker
+              </button>
+            </div>
+            <div class="col-4">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100 rounded-3 py-2 fw-semibold"
+                (click)="quickFill('Receptionist')">
+                Staff
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card footer version -->
+        <div class="text-center mt-4 pt-3 border-top border-slate-800">
+          <span class="text-slate-500 small">PropTrail CRM Enterprise • v2.4.0</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

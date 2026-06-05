@@ -1,0 +1,244 @@
+<div class="login-wrapper container-fluid p-0 m-0">
+  <div class="row g-0 min-vh-100">
+    
+    <!-- Left Pane: Illustration & Content (Visible only on large devices) -->
+    <div class="col-lg-7 d-none d-lg-flex flex-column justify-content-between p-5 text-white position-relative illustration-pane">
+      <div class="illustration-overlay"></div>
+      
+      <!-- Brand header -->
+      <div class="brand-header position-relative z-3">
+        <h3 class="fw-bold d-flex align-items-center gap-2">
+          <span>🏔️</span> PropTrail
+        </h3>
+      </div>
+
+      <!-- Center building SVG illustration -->
+      <div class="illustration-content d-flex flex-column align-items-center justify-content-center text-center my-auto position-relative z-3">
+        <svg class="building-svg mb-4" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.05"/>
+            </linearGradient>
+            <linearGradient id="buildingGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.1"/>
+            </linearGradient>
+            <linearGradient id="buildingGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#2563eb" stop-opacity="0.1"/>
+            </linearGradient>
+            <linearGradient id="buildingGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#93c5fd" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#1e40af" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Sun/Glow -->
+          <circle cx="400" cy="220" r="160" fill="url(#skyGrad)" />
+          
+          <!-- Background buildings -->
+          <rect x="180" y="180" width="80" height="320" rx="4" fill="#1d4ed8" fill-opacity="0.08" />
+          <rect x="280" y="120" width="100" height="380" rx="6" fill="#1d4ed8" fill-opacity="0.06" />
+          <rect x="420" y="160" width="90" height="340" rx="4" fill="#1d4ed8" fill-opacity="0.1" />
+          <rect x="540" y="220" width="100" height="280" rx="6" fill="#1d4ed8" fill-opacity="0.05" />
+
+          <!-- Main left building -->
+          <rect x="220" y="140" width="95" height="360" rx="6" fill="url(#buildingGrad3)" />
+          
+          <!-- Middle primary building -->
+          <rect x="340" y="80" width="115" height="420" rx="8" fill="url(#buildingGrad1)" />
+          <g fill="#ffffff" fill-opacity="0.35">
+            <rect x="360" y="110" width="18" height="8" rx="1" />
+            <rect x="388" y="110" width="18" height="8" rx="1" />
+            <rect x="416" y="110" width="18" height="8" rx="1" />
+            <rect x="360" y="135" width="18" height="12" rx="1" />
+            <rect x="388" y="135" width="18" height="12" rx="1" />
+            <rect x="416" y="135" width="18" height="12" rx="1" />
+            <rect x="360" y="165" width="18" height="12" rx="1" />
+            <rect x="388" y="165" width="18" height="12" rx="1" />
+            <rect x="416" y="165" width="18" height="12" rx="1" />
+            <rect x="360" y="195" width="18" height="12" rx="1" />
+            <rect x="388" y="195" width="18" height="12" rx="1" />
+            <rect x="416" y="195" width="18" height="12" rx="1" />
+            <rect x="360" y="225" width="18" height="12" rx="1" />
+            <rect x="388" y="225" width="18" height="12" rx="1" />
+            <rect x="416" y="225" width="18" height="12" rx="1" />
+          </g>
+
+          <!-- Main right building -->
+          <rect x="480" y="120" width="100" height="380" rx="6" fill="url(#buildingGrad2)" />
+          <g fill="#ffffff" fill-opacity="0.3">
+            <rect x="500" y="150" width="16" height="16" rx="1" />
+            <rect x="524" y="150" width="16" height="16" rx="1" />
+            <rect x="548" y="150" width="16" height="16" rx="1" />
+            <rect x="500" y="180" width="16" height="16" rx="1" />
+            <rect x="524" y="180" width="16" height="16" rx="1" />
+            <rect x="548" y="180" width="16" height="16" rx="1" />
+            <rect x="500" y="210" width="16" height="16" rx="1" />
+            <rect x="524" y="210" width="16" height="16" rx="1" />
+            <rect x="548" y="210" width="16" height="16" rx="1" />
+          </g>
+
+          <!-- Horizontal baseline -->
+          <line x1="100" y1="490" x2="700" y2="490" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" opacity="0.4" />
+          <line x1="150" y1="496" x2="650" y2="496" stroke="#2563eb" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+        </svg>
+        <h2 class="fw-bold mb-3 slogan-title">Find Your Perfect Dream Property</h2>
+        <p class="text-white-50 max-width-text fs-5">
+          Join our portal to browse active listings, request visits, upload KYC details, and track your deal completion stages.
+        </p>
+      </div>
+
+      <!-- Footer credits -->
+      <div class="illustration-footer position-relative z-3">
+        <p class="small text-white-50 mb-0">© 2026 PropTrail CRM System. All rights reserved.</p>
+      </div>
+    </div>
+
+    <!-- Right Pane: Sign Up Card -->
+    <div class="col-12 col-lg-5 d-flex align-items-center justify-content-center p-4 p-md-5 bg-gradient-right">
+      <div class="card login-card shadow-lg border-0 p-4 p-md-5" style="max-height: 90vh; overflow-y: auto;">
+        
+        <!-- Mobile brand header -->
+        <div class="text-center d-lg-none mb-4">
+          <div class="brand-icon mb-2">🏔️</div>
+          <h2 class="fw-bold text-gradient">PropTrail</h2>
+        </div>
+        
+        <!-- Welcome text -->
+        <div class="text-start mb-4">
+          <h3 class="fw-bold text-slate-800">Buyer Registration</h3>
+          <p class="text-muted small">Create your account to browse and request properties</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()">
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="alert alert-danger border-0 p-3 small mb-3 rounded-3 text-center">
+            ⚠️ {{ errorMessage }}
+          </div>
+
+          <!-- Name Row -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-slate-700 fw-semibold small">First Name</label>
+              <div class="input-group input-group-custom">
+                <input type="text" [(ngModel)]="firstName" name="firstName" class="form-control" placeholder="e.g. John" required />
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-slate-700 fw-semibold small">Last Name</label>
+              <div class="input-group input-group-custom">
+                <input type="text" [(ngModel)]="lastName" name="lastName" class="form-control" placeholder="e.g. Doe" required />
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label text-slate-700 fw-semibold small">Email Address</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">✉️</span>
+              <input type="email" [(ngModel)]="email" name="email" class="form-control border-start-0 ps-0" placeholder="john.doe@gmail.com" required />
+            </div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="mb-3">
+            <label class="form-label text-slate-700 fw-semibold small">Mobile Number</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">📞</span>
+              <input type="text" [(ngModel)]="mobile" name="mobile" class="form-control border-start-0 ps-0" placeholder="e.g. 9876543210" />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label text-slate-700 fw-semibold small">Password</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">🔑</span>
+             
+             
+              <input 
+  [type]="showPassword ? 'text' : 'password'"
+  [(ngModel)]="password"
+  name="password"
+  class="form-control border-start-0 border-end-0 ps-0"
+  placeholder="••••••••"
+  required />
+
+<button
+  type="button"
+  class="input-group-text bg-transparent border-start-0 text-muted password-toggle-btn"
+  (click)="showPassword = !showPassword">
+
+  <span class="material-symbols-outlined">
+    {{ showPassword ? 'visibility_off' : 'visibility' }}
+  </span>
+
+</button>
+
+
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-4">
+            <label class="form-label text-slate-700 fw-semibold small">Confirm Password</label>
+            <div class="input-group input-group-custom">
+              <span class="input-group-text bg-transparent border-end-0 text-muted">🔑</span>
+
+
+
+              <input
+  [type]="showConfirmPassword ? 'text' : 'password'"
+  [(ngModel)]="confirmPassword"
+  name="confirmPassword"
+  class="form-control border-start-0 border-end-0 ps-0"
+  placeholder="••••••••"
+  required />
+
+<button
+  type="button"
+  class="input-group-text bg-transparent border-start-0 text-muted password-toggle-btn"
+  (click)="showConfirmPassword = !showConfirmPassword">
+
+  <span class="material-symbols-outlined">
+    {{ showConfirmPassword ? 'visibility_off' : 'visibility' }}
+  </span>
+
+</button>
+
+
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="form-check mb-4">
+            <input class="form-check-input" 
+            type="checkbox"
+             id="acceptTerms" 
+             [(ngModel)]="acceptTerms" 
+             name="acceptTerms">
+
+            <label class="form-check-label small text-muted" for="acceptTerms">
+              I agree to the Terms & Conditions and Privacy Policy
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm rounded-3 submit-btn mb-2">
+            Register Account
+          </button>
+
+          <!-- Back to Login -->
+          <div class="text-center">
+            <span class="small text-muted">Already have an account? </span>
+            <a routerLink="/login" class="small fw-bold text-primary text-decoration-none">Sign In Here</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

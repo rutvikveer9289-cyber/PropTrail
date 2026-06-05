@@ -1,0 +1,168 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold">Owner Management</h2>
+    <span class="badge bg-secondary p-2">{{ owners.length }} Registered Owners</span>
+  </div>
+
+  <!-- Entry Form Card -->
+  <div class="card shadow-sm border-0 mb-4 bg-light">
+    <div class="card-header bg-dark text-white fw-bold">
+      {{ isEditMode ? 'Edit Owner Profile' : 'Add New Owner Profile' }}
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="saveOwner()">
+        <div class="row g-3">
+          <!-- Name -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">Owner Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control border-secondary-subtle"
+              placeholder="e.g. John Doe"
+              [(ngModel)]="owner.name"
+              name="name"
+              required>
+          </div>
+
+          <!-- Mobile -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">Mobile Number <span class="text-danger">*</span></label>
+            <input
+              type="tel"
+              class="form-control border-secondary-subtle"
+              placeholder="e.g. 9876543210"
+              [(ngModel)]="owner.mobile"
+              name="mobile"
+              required>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">Email Address <span class="text-danger">*</span></label>
+            <input
+              type="email"
+              class="form-control border-secondary-subtle"
+              placeholder="e.g. john@example.com"
+              [(ngModel)]="owner.email"
+              name="email"
+              required>
+          </div>
+
+          <!-- Price Flexibility -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">Price Flexibility</label>
+            <select class="form-select border-secondary-subtle" [(ngModel)]="owner.priceFlexibility" name="priceFlexibility">
+              <option value="">Select Flexibility</option>
+              <option value="Highly Flexible">Highly Flexible</option>
+              <option value="Moderately Flexible">Moderately Flexible</option>
+              <option value="Firm Price">Firm / Non-Negotiable</option>
+            </select>
+          </div>
+
+          <!-- NOC Status -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">NOC Status</label>
+            <select class="form-select border-secondary-subtle" [(ngModel)]="owner.nocStatus" name="nocStatus">
+              <option value="">Select NOC Status</option>
+              <option value="Ready">Ready / Available</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Not Obtained">Not Obtained</option>
+            </select>
+          </div>
+
+          <!-- Restrictions -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted">Tenant Restrictions / Notes</label>
+            <input
+              type="text"
+              class="form-control border-secondary-subtle"
+              placeholder="e.g. Bachelors not allowed, No pets"
+              [(ngModel)]="owner.restrictions"
+              name="restrictions">
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" class="btn btn-outline-secondary px-4" (click)="resetForm()">
+            Clear
+          </button>
+          <button type="submit" class="btn btn-primary px-4 fw-bold">
+            {{ isEditMode ? 'Update Owner' : 'Add Owner' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Listings Table -->
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th class="ps-3">ID</th>
+            <th>Name</th>
+            <th>Contact Details</th>
+            <th>Flexibility</th>
+            <th>NOC Status</th>
+            <th>Restrictions / Notes</th>
+            <th class="text-end pe-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of owners" class="hover-row">
+            <td class="ps-3 text-muted fw-bold">{{ o.id }}</td>
+            <td>
+              <span class="fw-semibold text-dark">{{ o.name }}</span>
+            </td>
+            <td>
+              <div class="text-dark small"><i class="bi bi-phone"></i> {{ o.mobile }}</div>
+              <div class="text-muted small"><i class="bi bi-envelope"></i> {{ o.email }}</div>
+            </td>
+            <td>
+              <span class="badge" 
+                [ngClass]="{
+                  'bg-success-subtle text-success': o.priceFlexibility === 'Highly Flexible',
+                  'bg-warning-subtle text-warning-emphasis': o.priceFlexibility === 'Moderately Flexible',
+                  'bg-danger-subtle text-danger': o.priceFlexibility === 'Firm Price',
+                  'bg-light text-muted': !o.priceFlexibility
+                }">
+                {{ o.priceFlexibility || 'N/A' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge rounded-pill"
+                [ngClass]="{
+                  'bg-success': o.nocStatus === 'Ready',
+                  'bg-warning text-dark': o.nocStatus === 'In Progress',
+                  'bg-danger': o.nocStatus === 'Not Obtained',
+                  'bg-secondary': !o.nocStatus
+                }">
+                {{ o.nocStatus || 'Unknown' }}
+              </span>
+            </td>
+            <td class="text-wrap" style="max-width: 250px;">
+              <small class="text-muted">{{ o.restrictions || 'None' }}</small>
+            </td>
+            <td class="text-end pe-3">
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-warning" (click)="editOwner(o)">
+                  Edit
+                </button>
+                <button type="button" class="btn btn-outline-danger" (click)="deleteOwner(o.id)">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="owners.length === 0">
+            <td colspan="7" class="text-center text-muted p-4">
+              No owners registered yet. Use the form above to add an owner profile.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

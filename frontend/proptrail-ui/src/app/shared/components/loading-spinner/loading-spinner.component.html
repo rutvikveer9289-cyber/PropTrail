@@ -1,0 +1,6 @@
+<div *ngIf="loaderService.loading$ | async" class="loading-overlay d-flex flex-column justify-content-center align-items-center">
+  <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="text-white mt-3 fw-bold" style="letter-spacing: 1px; font-size: 1.1rem;">Processing...</p>
+</div>

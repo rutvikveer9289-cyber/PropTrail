@@ -1,0 +1,94 @@
+.metric-card {
+  border-radius: 12px;
+  background: #ffffff;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0,0,0,0.03);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.bg-light-blue {
+  background-color: rgba(3, 105, 161, 0.1);
+}
+
+.bg-light-green {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.bg-light-orange {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.bg-light-green-subtle {
+  background-color: rgba(16, 185, 129, 0.08);
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+.dot-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.print-only-header {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only-header {
+    display: block !important;
+  }
+
+  body {
+    background: white !important;
+    color: #000 !important;
+  }
+
+  .reports-container {
+    padding: 0 !important;
+  }
+
+  .card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    background: transparent !important;
+  }
+
+  .progress {
+    border: 1px solid #ccc !important;
+    background: #fff !important;
+  }
+
+  .progress-bar {
+    background-color: #333 !important;
+  }
+}

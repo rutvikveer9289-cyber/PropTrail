@@ -1,0 +1,117 @@
+.deal-card {
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.deal-stepper-wrapper {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+}
+
+/* Horizontal Stepper Styling */
+.stepper-horizontal {
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.stepper-bar {
+  position: absolute;
+  top: 36px;
+  left: 5%;
+  right: 5%;
+  height: 4px;
+  background-color: #cbd5e1;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.stepper-fill {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  transition: width 0.4s ease-in-out;
+}
+
+.stepper-steps-container {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 15%;
+  text-align: center;
+
+  .step-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #64748b;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+
+    .material-symbols-outlined {
+      color: #ffffff;
+    }
+  }
+
+  .step-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    transition: all 0.3s ease;
+  }
+
+  /* States */
+  &.completed {
+    .step-icon {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+    .step-label {
+      color: #1e293b;
+      font-weight: 700;
+    }
+  }
+
+  &.current {
+    .step-icon {
+      background-color: #eff6ff;
+      border-color: #3b82f6;
+      color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      animation: pulseBorder 2s infinite;
+    }
+    .step-label {
+      color: #3b82f6;
+      font-weight: 800;
+    }
+  }
+}
+
+@keyframes pulseBorder {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}

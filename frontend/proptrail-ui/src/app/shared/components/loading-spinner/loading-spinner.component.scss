@@ -1,0 +1,11 @@
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(20, 24, 33, 0.7);
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease-in-out;
+}

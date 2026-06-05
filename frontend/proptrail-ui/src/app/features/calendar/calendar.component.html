@@ -1,0 +1,124 @@
+<div class="calendar-container page-enter">
+  
+  <!-- Page Header -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">CRM Calendar</h2>
+      <p class="page-subtitle">Track property visits, lead follow-ups, and transaction milestones</p>
+    </div>
+    
+    <div class="calendar-controls">
+      <button (click)="prevMonth()" class="pt-btn pt-btn-secondary pt-btn-sm">
+        <span class="material-symbols-outlined icon-sm">chevron_left</span>
+      </button>
+      <span class="calendar-month-label">
+        {{ getMonthYearLabel() }}
+      </span>
+      <button (click)="nextMonth()" class="pt-btn pt-btn-secondary pt-btn-sm">
+        <span class="material-symbols-outlined icon-sm">chevron_right</span>
+      </button>
+      <div class="divider-y"></div>
+      <button (click)="goToToday()" class="pt-btn pt-btn-primary pt-btn-sm">
+        Today
+      </button>
+    </div>
+  </div>
+
+  <div class="flex justify-center items-center py-20" *ngIf="isLoading">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+  </div>
+
+  <div class="calendar-grid-card pt-card" *ngIf="!isLoading">
+    <div class="calendar-weekdays-row">
+      <div *ngFor="let day of weekDays" class="weekday-header">{{ day }}</div>
+    </div>
+
+    <div class="calendar-days-grid">
+      <div 
+        *ngFor="let day of daysInMonth"
+        class="calendar-day-cell"
+        [ngClass]="{
+          'other-month': !isSameMonth(day),
+          'current-month': isSameMonth(day) && !isToday(day),
+          'today-cell': isToday(day)
+        }">
+        
+        <div class="day-number-row">
+          <span 
+            class="day-number"
+            [class.today-badge]="isToday(day)">
+            {{ day.getDate() }}
+          </span>
+        </div>
+
+        <div class="day-events-list">
+          <button 
+            *ngFor="let event of getEventsForDate(day)"
+            (click)="selectEvent(event); $event.stopPropagation()"
+            class="day-event-btn"
+            [ngClass]="{
+              'event-visit': event.type === 'visit',
+              'event-followup': event.type === 'followup'
+            }">
+            <span *ngIf="event.type === 'visit'">🤝</span>
+            <span *ngIf="event.type === 'followup'">📞</span>
+            {{ event.title }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Modal Dialog -->
+  <div *ngIf="selectedEvent" class="pt-modal-overlay" (click)="closeEventModal()">
+    <div class="pt-modal-card pt-card page-enter" (click)="$event.stopPropagation()">
+      <div class="pt-card-header bg-primary text-white">
+        <span class="section-title text-white">Event Details</span>
+        <button (click)="closeEventModal()" class="pt-btn pt-btn-ghost pt-btn-sm text-white" style="padding: 0; width: 32px; height: 32px;">
+          <span class="material-symbols-outlined text-white">close</span>
+        </button>
+      </div>
+      <div class="pt-card-body">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-2xl">
+            {{ selectedEvent.type === 'visit' ? '🤝' : '📞' }}
+          </span>
+          <span class="pt-badge"
+            [ngClass]="{
+              'badge-success': selectedEvent.type === 'visit',
+              'badge-primary': selectedEvent.type === 'followup'
+            }">
+            {{ selectedEvent.type === 'visit' ? 'Site Visit' : 'Follow-Up' }}
+          </span>
+        </div>
+
+        <h3 class="text-lg font-bold text-dark mb-3">{{ selectedEvent.title }}</h3>
+        
+        <div class="space-y-3">
+          <div class="mb-3">
+            <span class="pt-field-label">Scheduled Date</span>
+            <span class="text-dark fw-600">{{ selectedEvent.date | date:'fullDate' }}</span>
+          </div>
+          <div class="mb-3">
+            <span class="pt-field-label">Status</span>
+            <span class="pt-badge badge-neutral">{{ selectedEvent.status || 'Active' }}</span>
+          </div>
+          <div>
+            <span class="pt-field-label">Notes / Remarks</span>
+            <p class="text-muted bg-light p-3 rounded-3 mt-1 text-xs border">
+              {{ selectedEvent.notes }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button (click)="closeEventModal()" class="pt-btn pt-btn-secondary">
+            Close Window
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

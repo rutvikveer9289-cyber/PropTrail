@@ -1,0 +1,138 @@
+<div class="broker-performance-container p-6 min-h-screen bg-slate-950 text-slate-100 font-sans">
+  <div class="mb-6">
+    <h1 class="text-3xl font-extrabold tracking-tight">Broker Performance Center</h1>
+    <p class="text-slate-400">Track and compare real-time team performance metrics, conversions, and commissions.</p>
+  </div>
+
+  <div class="flex justify-center items-center py-20" *ngIf="isLoading">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-indigo-500"></div>
+  </div>
+
+  <div class="space-y-6" *ngIf="!isLoading">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-2xl font-bold">🏆</div>
+        <div>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Top Broker</span>
+          <span class="text-lg font-bold text-slate-200" *ngIf="leaderboard.length > 0">
+            {{ leaderboard[0].brokerName }}
+          </span>
+          <span class="text-slate-500 italic" *ngIf="leaderboard.length === 0">No records</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl font-bold">💰</div>
+        <div>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Total Deals Revenue</span>
+          <span class="text-lg font-bold text-slate-200">
+            ₹{{ getTotalRevenue() | number }}
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl font-bold">📈</div>
+        <div>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Avg. Conversion Rate</span>
+          <span class="text-lg font-bold text-slate-200">
+            {{ getAverageConversion() }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+      <h2 class="text-xl font-bold text-slate-200 mb-4">Broker Leaderboard</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-xs text-slate-400 font-bold uppercase tracking-wider">
+              <th class="py-3 px-4 text-center">Rank</th>
+              <th class="py-3 px-4">Broker Name</th>
+              <th class="py-3 px-4 text-center">Leads Assigned</th>
+              <th class="py-3 px-4 text-center">Completed Visits</th>
+              <th class="py-3 px-4 text-center">Deals Closed</th>
+              <th class="py-3 px-4 text-right">Revenue Generated</th>
+              <th class="py-3 px-4 text-right">Commission Earned</th>
+              <th class="py-3 px-4 text-center">Conversion (%)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-sm">
+            <tr *ngFor="let b of leaderboard; let idx = index" class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-4 text-center font-bold">
+                <span *ngIf="idx === 0" class="text-xl">🥇</span>
+                <span *ngIf="idx === 1" class="text-xl">🥈</span>
+                <span *ngIf="idx === 2" class="text-xl">🥉</span>
+                <span *ngIf="idx > 2" class="text-slate-400">#{{ idx + 1 }}</span>
+              </td>
+              <td class="py-4 px-4">
+                <div class="font-semibold text-slate-200">{{ b.brokerName }}</div>
+                <div class="text-xs text-slate-500">{{ b.email }}</div>
+              </td>
+              <td class="py-4 px-4 text-center text-slate-300">{{ b.totalLeadsAssigned }}</td>
+              <td class="py-4 px-4 text-center text-slate-300">{{ b.siteVisitsCompleted }}</td>
+              <td class="py-4 px-4 text-center text-slate-300 font-semibold">{{ b.dealsClosed }}</td>
+              <td class="py-4 px-4 text-right text-slate-200 font-bold">₹{{ b.revenueGenerated | number }}</td>
+              <td class="py-4 px-4 text-right text-indigo-400 font-semibold">₹{{ b.commissionGenerated | number }}</td>
+              <td class="py-4 px-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <span class="font-bold text-slate-200">{{ b.conversionPercentage }}%</span>
+                  <div class="w-16 bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-indigo-500 h-full rounded-full" [style.width.%]="b.conversionPercentage"></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="leaderboard.length === 0">
+              <td colspan="8" class="py-8 text-center text-slate-500 italic">No broker metrics available.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" *ngIf="comparisonData">
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-xl font-bold text-slate-200 mb-4">Monthly Closed Deals Revenue</h2>
+        
+        <div class="flex items-end justify-between h-48 px-4 border-b border-l border-slate-800 pt-4">
+          <div *ngFor="let m of comparisonData.monthlyRevenue" class="flex flex-col items-center flex-1 group">
+            <span class="text-[10px] text-slate-400 font-bold opacity-0 group-hover:opacity-100 transition duration-200 mb-2">
+              ₹{{ m.revenue | number:'1.0-0' }}
+            </span>
+            <div 
+              class="w-8 bg-indigo-500/80 group-hover:bg-indigo-400 rounded-t transition-all duration-500" 
+              [style.height.px]="m.revenue > 0 ? (m.revenue / getMaxRevenueVal()) * 120 : 5">
+            </div>
+            <span class="text-xs text-slate-500 mt-2 font-semibold">{{ m.month }}</span>
+          </div>
+          <div *ngIf="comparisonData.monthlyRevenue?.length === 0" class="w-full text-center text-slate-500 italic pb-20">
+            No monthly stats recorded yet.
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-xl font-bold text-slate-200 mb-4">Monthly Commissions Generated</h2>
+        
+        <div class="flex items-end justify-between h-48 px-4 border-b border-l border-slate-800 pt-4">
+          <div *ngFor="let m of comparisonData.monthlyRevenue" class="flex flex-col items-center flex-1 group">
+            <span class="text-[10px] text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition duration-200 mb-2">
+              ₹{{ m.commission | number:'1.0-0' }}
+            </span>
+            <div 
+              class="w-8 bg-emerald-500/80 group-hover:bg-emerald-400 rounded-t transition-all duration-500" 
+              [style.height.px]="m.commission > 0 ? (m.commission / getMaxCommVal()) * 120 : 5">
+            </div>
+            <span class="text-xs text-slate-500 mt-2 font-semibold">{{ m.month }}</span>
+          </div>
+          <div *ngIf="comparisonData.monthlyRevenue?.length === 0" class="w-full text-center text-slate-500 italic pb-20">
+            No monthly commissions recorded yet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

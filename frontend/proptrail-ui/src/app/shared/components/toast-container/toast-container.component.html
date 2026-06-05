@@ -1,0 +1,19 @@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  <div *ngFor="let toast of toastService.toasts" 
+       class="toast show align-items-center text-white border-0 mb-2 shadow animate-toast" 
+       [ngClass]="'bg-' + toast.type" 
+       role="alert" 
+       aria-live="assertive" 
+       aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold">
+        <span *ngIf="toast.type === 'success'" class="me-1">✔️</span>
+        <span *ngIf="toast.type === 'danger'" class="me-1">❌</span>
+        <span *ngIf="toast.type === 'warning'" class="me-1">⚠️</span>
+        <span *ngIf="toast.type === 'info'" class="me-1">ℹ️</span>
+        {{ toast.message }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastService.dismiss(toast.id)" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

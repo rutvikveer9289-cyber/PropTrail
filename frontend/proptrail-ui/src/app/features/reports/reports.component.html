@@ -1,0 +1,162 @@
+<div class="reports-container p-4">
+  <!-- Header -->
+  <div class="reports-header d-flex justify-content-between align-items-center mb-4 no-print">
+    <div>
+      <h2 class="text-slate-800 fw-bold mb-1">Business Intelligence & Reports</h2>
+      <p class="text-muted small mb-0">Detailed analytical summary of leads, conversion rates, and brokerage performance</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button (click)="exportCSV()" class="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm border-2">
+        <span>📥</span> Export CSV
+      </button>
+      <button (click)="printReport()" class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm">
+        <span>🖨️</span> Print Report
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5 no-print">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading reports...</span>
+    </div>
+    <p class="mt-2 text-muted">Analyzing database metrics...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger border-0 shadow-sm mb-4 no-print">
+    ⚠️ {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && dashboardData">
+    <!-- Printable Header (Visible only when printing) -->
+    <div class="print-only-header mb-4 text-center">
+      <h2>🏔️ PropTrail CRM</h2>
+      <h4>Business Analytics & Performance Report</h4>
+      <p class="text-muted">Generated on {{ today | date:'medium' }}</p>
+      <hr>
+    </div>
+
+    <!-- 3 Key Analytical Ratios -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm p-4 text-center h-100 bg-white">
+          <div class="metric-icon bg-light-blue mx-auto mb-3">🎯</div>
+          <h6 class="text-muted uppercase fw-bold mb-1">Deal Conversion Rate</h6>
+          <h2 class="fw-bold text-primary mb-2">{{ dealConversionRate | number:'1.1-2' }}%</h2>
+          <div class="progress rounded-pill bg-light" style="height: 8px;">
+            <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="dealConversionRate" [attr.aria-valuenow]="dealConversionRate" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="small text-muted mt-2 d-block">Ratio of Won deals to total deals closed</span>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm p-4 text-center h-100 bg-white">
+          <div class="metric-icon bg-light-green mx-auto mb-3">💰</div>
+          <h6 class="text-muted uppercase fw-bold mb-1">Average Deal Value</h6>
+          <h2 class="fw-bold text-success mb-2">₹{{ averageRevenuePerDeal | number:'1.0-0' }}</h2>
+          <div class="small-badge text-success bg-light-green-subtle mx-auto px-2 py-1 rounded">Per closed deal</div>
+          <span class="small text-muted mt-2 d-block">Average commission generated per Won deal</span>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm p-4 text-center h-100 bg-white">
+          <div class="metric-icon bg-light-orange mx-auto mb-3">🚶</div>
+          <h6 class="text-muted uppercase fw-bold mb-1">Engagement Index</h6>
+          <h2 class="fw-bold text-warning mb-2">{{ leadEngagementRate | number:'1.1-2' }}%</h2>
+          <div class="progress rounded-pill bg-light" style="height: 8px;">
+            <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="leadEngagementRate > 100 ? 100 : leadEngagementRate" [attr.aria-valuenow]="leadEngagementRate" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="small text-muted mt-2 d-block">Visits planned per registered Lead</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Performance Tables -->
+    <div class="row g-4">
+      <!-- Table 1: Inventory & Pipeline Summary -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+          <h5 class="fw-bold text-dark mb-3">📊 Pipeline Statistics</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light text-muted small uppercase">
+                <tr>
+                  <th>Category</th>
+                  <th class="text-end">Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Total Registered Leads</td>
+                  <td class="text-end fw-semibold">{{ dashboardData.totalLeads }}</td>
+                </tr>
+                <tr>
+                  <td>Active Leads (Ongoing Follow-ups)</td>
+                  <td class="text-end fw-semibold text-primary">{{ dashboardData.activeLeads }}</td>
+                </tr>
+                <tr>
+                  <td>Total Visits Planned</td>
+                  <td class="text-end fw-semibold">{{ dashboardData.totalVisits }}</td>
+                </tr>
+                <tr>
+                  <td>Active Scheduled Site Visits</td>
+                  <td class="text-end fw-semibold text-warning">{{ dashboardData.scheduledVisits }}</td>
+                </tr>
+                <tr>
+                  <td>Total Properties in Database</td>
+                  <td class="text-end fw-semibold">{{ dashboardData.totalProperties }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 2: Deal Status Breakdown -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+          <h5 class="fw-bold text-dark mb-3">💎 Deal Outcomes & Commission</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light text-muted small uppercase">
+                <tr>
+                  <th>Deal Stage</th>
+                  <th class="text-end">Count</th>
+                  <th class="text-end">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="dot-indicator bg-success"></span> Won Deals</td>
+                  <td class="text-end fw-semibold text-success">{{ dashboardData.wonDeals }}</td>
+                  <td class="text-end text-muted small">
+                    {{ (dashboardData.wonDeals / ((dashboardData.wonDeals + dashboardData.openDeals + dashboardData.lostDeals) || 1) * 100) | number:'1.0-1' }}%
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="dot-indicator bg-primary"></span> Open / Ongoing Deals</td>
+                  <td class="text-end fw-semibold text-primary">{{ dashboardData.openDeals }}</td>
+                  <td class="text-end text-muted small">
+                    {{ (dashboardData.openDeals / ((dashboardData.wonDeals + dashboardData.openDeals + dashboardData.lostDeals) || 1) * 100) | number:'1.0-1' }}%
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="dot-indicator bg-danger"></span> Lost Deals</td>
+                  <td class="text-end fw-semibold text-danger">{{ dashboardData.lostDeals }}</td>
+                  <td class="text-end text-muted small">
+                    {{ (dashboardData.lostDeals / ((dashboardData.wonDeals + dashboardData.openDeals + dashboardData.lostDeals) || 1) * 100) | number:'1.0-1' }}%
+                  </td>
+                </tr>
+                <tr class="table-light fw-bold">
+                  <td>Total Revenue (INR)</td>
+                  <td colspan="2" class="text-end text-success">₹{{ dashboardData.totalRevenue | number:'1.0-0' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

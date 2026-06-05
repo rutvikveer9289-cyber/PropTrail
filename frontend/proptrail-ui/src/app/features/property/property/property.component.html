@@ -1,0 +1,519 @@
+<div class="property-container page-enter">
+
+  <!-- ── Page Header ────────────────── -->
+  <div class="dash-header mb-4">
+    <div>
+      <h2 class="page-title">{{ userRole === 'Buyer' ? 'Available Properties' : 'Property Inventory' }}</h2>
+      <p class="page-subtitle">
+        {{ userRole === 'Buyer' 
+           ? 'Browse, search, and schedule walkthroughs for residential & commercial properties' 
+           : 'Manage, categorize, and showcase your residential & commercial listings' }}
+      </p>
+    </div>
+    <div class="dash-header-actions">
+      <!-- Grid / Table View Switcher -->
+      <div class="view-switcher-group mr-2">
+        <button
+          type="button"
+          class="switcher-btn"
+          [class.active]="viewMode === 'grid'"
+          (click)="viewMode = 'grid'"
+          title="Grid Card View">
+          <span class="material-symbols-outlined">grid_view</span>
+        </button>
+        <button
+          type="button"
+          class="switcher-btn"
+          [class.active]="viewMode === 'table'"
+          (click)="viewMode = 'table'"
+          title="Table Directory View">
+          <span class="material-symbols-outlined">list</span>
+        </button>
+      </div>
+
+      <button class="pt-btn pt-btn-primary" (click)="showForm = !showForm" *ngIf="userRole !== 'Buyer'">
+        <span class="material-symbols-outlined">{{ showForm ? 'close' : 'add_business' }}</span>
+        {{ showForm ? 'Hide Form' : 'Add Property' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Collapsible Property Form ───── -->
+  <div class="pt-card form-card mb-4" *ngIf="showForm">
+    <div class="pt-card-header">
+      <span class="section-title text-primary">
+        <span class="material-symbols-outlined icon-sm" style="vertical-align: text-bottom; margin-right: 4px;">
+          {{ isEditMode ? 'edit_square' : 'add_circle' }}
+        </span>
+        {{ isEditMode ? 'Modify Property Details' : 'Add New Property Listing' }}
+      </span>
+      <span class="pt-badge" [class.badge-primary]="!isEditMode" [class.badge-warning]="isEditMode">
+        {{ isEditMode ? 'Editing Mode' : 'New Listing' }}
+      </span>
+    </div>
+    <div class="pt-card-body">
+      <form (submit)="addProperty(); $event.preventDefault()">
+        <div class="form-grid">
+          <!-- Column 1: Basic Specifications -->
+          <div class="form-section">
+            <h4 class="form-section-title">Specifications</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Property Name</label>
+              <input type="text" class="pt-input" placeholder="e.g. Skyline Towers" [(ngModel)]="property.propertyName" name="propertyName" required>
+            </div>
+            <div class="form-row mb-3">
+              <div class="form-group col">
+                <label class="pt-field-label">Property Type</label>
+                <input type="text" class="pt-input" placeholder="e.g. Apartment, Villa" [(ngModel)]="property.propertyType" name="propertyType">
+              </div>
+              <div class="form-group col">
+                <label class="pt-field-label">BHK Size</label>
+                <select class="pt-select" [(ngModel)]="property.bhkCount" name="bhkCount">
+                  <option [ngValue]="0">Commercial (N/A)</option>
+                  <option [ngValue]="1">1 BHK</option>
+                  <option [ngValue]="2">2 BHK</option>
+                  <option [ngValue]="3">3 BHK</option>
+                  <option [ngValue]="4">4 BHK</option>
+                  <option [ngValue]="5">5 BHK</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Location / Locality</label>
+              <input type="text" class="pt-input" placeholder="e.g. Andheri West, Mumbai" [(ngModel)]="property.location" name="location" required>
+            </div>
+          </div>
+
+          <!-- Column 2: Pricing & Inventory Details -->
+          <div class="form-section">
+            <h4 class="form-section-title">Pricing &amp; Owner</h4>
+            <div class="form-row mb-3">
+              <div class="form-group col">
+                <label class="pt-field-label">Price (₹)</label>
+                <input type="number" class="pt-input" placeholder="e.g. 75,000,00" [(ngModel)]="property.price" name="price">
+              </div>
+              <div class="form-group col">
+                <label class="pt-field-label">Area (Sq. Ft.)</label>
+                <input type="number" class="pt-input" placeholder="e.g. 1100" [(ngModel)]="property.area" name="area">
+              </div>
+            </div>
+            <div class="form-row mb-3">
+              <div class="form-group col">
+                <label class="pt-field-label">Listing Mode</label>
+                <select class="pt-select" [(ngModel)]="property.listingType" name="listingType">
+                  <option value="Sale">For Sale</option>
+                  <option value="Rent">For Rent</option>
+                </select>
+              </div>
+              <div class="form-group col">
+                <label class="pt-field-label">Listing Status</label>
+                <select class="pt-select" [(ngModel)]="property.status" name="status">
+                  <option value="Available">Available</option>
+                  <option value="On Hold">On Hold</option>
+                  <option value="Sold">Sold</option>
+                  <option value="Rented">Rented</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="pt-field-label mb-0">Property Owner</label>
+                <button type="button" class="pt-btn pt-btn-ghost pt-btn-sm" style="padding: 0; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;" (click)="showQuickAddOwner = true">
+                  <span class="material-symbols-outlined icon-sm">add_circle</span>
+                  Quick Add Owner
+                </button>
+              </div>
+              <select class="pt-select" [(ngModel)]="property.ownerId" name="ownerId">
+                <option [ngValue]="0">Select Owner</option>
+                <option *ngFor="let o of owners" [ngValue]="o.id">
+                  {{ o.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Column 3: Media & Features -->
+          <div class="form-section">
+            <h4 class="form-section-title">Amenities &amp; Media</h4>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Key Amenities (Comma-separated)</label>
+              <input type="text" class="pt-input" placeholder="e.g. Swimming Pool, Gym, Parking" [(ngModel)]="property.keyFeatures" name="keyFeatures">
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Cover Image URL</label>
+              <input type="text" class="pt-input" placeholder="e.g. https://site.com/cover.jpg" [(ngModel)]="property.imageUrls" name="imageUrls">
+            </div>
+            <div class="form-group mb-3">
+              <label class="pt-field-label">Video Walkthrough URL</label>
+              <input type="text" class="pt-input" placeholder="e.g. YouTube/Drive video link" [(ngModel)]="property.videoUrl" name="videoUrl">
+            </div>
+          </div>
+        </div>
+
+        <!-- Description Box -->
+        <div class="form-group mt-3">
+          <label class="pt-field-label">Description &amp; Remarks</label>
+          <textarea class="pt-input" rows="2" placeholder="Describe layout details, spacing, ventilation, landmark properties nearby..." [(ngModel)]="property.description" name="description"></textarea>
+        </div>
+
+        <div class="form-actions mt-4 justify-content-end">
+          <button type="button" class="pt-btn pt-btn-secondary" (click)="resetForm()">
+            Clear Form
+          </button>
+          <button type="submit" class="pt-btn pt-btn-primary">
+            <span class="material-symbols-outlined icon-sm">check_circle</span>
+            {{ isEditMode ? 'Update Listing' : 'Publish Listing' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Search and Advanced Filters Panel ── -->
+  <div class="pt-card filter-card mb-4">
+    <div class="pt-card-body filter-body">
+      <div class="filter-inputs">
+        <!-- Text Search -->
+        <div class="filter-group search-group">
+          <span class="material-symbols-outlined input-icon">search</span>
+          <input
+            type="text"
+            class="pt-input search-field"
+            placeholder="Search by name, location, type..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="filterProperties()">
+        </div>
+
+        <!-- Mode -->
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="filterListingType" (change)="filterProperties()">
+            <option value="">Listing Type (All)</option>
+            <option value="Sale">For Sale</option>
+            <option value="Rent">For Rent</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="filter-group" *ngIf="userRole !== 'Buyer'">
+          <select class="pt-select filter-select" [(ngModel)]="filterStatus" (change)="filterProperties()">
+            <option value="">Status (All)</option>
+            <option value="Available">Available</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Sold">Sold</option>
+            <option value="Rented">Rented</option>
+          </select>
+        </div>
+
+        <!-- BHK -->
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="filterBhk" (change)="filterProperties()">
+            <option [ngValue]="null">BHK (All)</option>
+            <option [ngValue]="0">Commercial</option>
+            <option [ngValue]="1">1 BHK</option>
+            <option [ngValue]="2">2 BHK</option>
+            <option [ngValue]="3">3 BHK</option>
+            <option [ngValue]="4">4 BHK</option>
+            <option [ngValue]="5">5 BHK</option>
+          </select>
+        </div>
+
+        <!-- Property Type -->
+        <div class="filter-group">
+          <select class="pt-select filter-select" [(ngModel)]="filterPropertyType" (change)="filterProperties()">
+            <option value="">Property Type (All)</option>
+            <option *ngFor="let type of availablePropertyTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <button class="pt-btn pt-btn-secondary" (click)="clearFilters()">
+          <span class="material-symbols-outlined icon-sm">filter_alt_off</span>
+          Clear
+        </button>
+      </div>
+
+      <!-- Price Range Row -->
+      <div class="price-range-row mt-3 pt-3">
+        <span class="range-label">Price Filter (₹):</span>
+        <div class="range-inputs">
+          <input type="number" class="pt-input range-field" placeholder="Min Price" [(ngModel)]="filterMinPrice" (ngModelChange)="filterProperties()">
+          <span class="range-divider">to</span>
+          <input type="number" class="pt-input range-field" placeholder="Max Price" [(ngModel)]="filterMaxPrice" (ngModelChange)="filterProperties()">
+        </div>
+        <div class="spacer"></div>
+        <span class="small-info">Showing <strong>{{ properties.length }}</strong> of <strong>{{ allProperties.length }}</strong> active listings</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Empty State ────────────────── -->
+  <div *ngIf="properties.length === 0" class="empty-state pt-card">
+    <span class="material-symbols-outlined empty-icon">apartment</span>
+    <h3>No Listings Found</h3>
+    <p>
+      We couldn't find any property matching the filter criteria. Clear filters 
+      {{ userRole === 'Buyer' ? 'or check back later for new listings.' : 'or publish a new property listing.' }}
+    </p>
+    <button class="pt-btn pt-btn-primary mt-2" (click)="clearFilters()">
+      Reset Filter Fields
+    </button>
+  </div>
+
+  <!-- ── Visual Card Grid Mode ──────── -->
+  <div class="property-grid" *ngIf="viewMode === 'grid' && properties.length > 0">
+    <div *ngFor="let p of properties" class="pt-card property-card hoverable">
+      <!-- Property Photo Cover -->
+      <div class="property-cover-area">
+        <!-- Fallback Container if no Image -->
+        <div *ngIf="!p.imageUrls" class="property-cover-fallback">
+          <span class="material-symbols-outlined fallback-icon">real_estate_agent</span>
+          <div class="pattern-overlay"></div>
+        </div>
+        <img *ngIf="p.imageUrls" [src]="p.imageUrls.split(',')[0]" class="property-cover-img" alt="Property Cover">
+
+        <!-- Floating Badge System -->
+        <div class="floating-badges">
+          <span class="pt-badge" [class.badge-success]="p.listingType === 'Sale'" [class.badge-accent]="p.listingType === 'Rent'">
+            For {{ p.listingType || 'Sale' }}
+          </span>
+          <span class="pt-badge"
+            [ngClass]="{
+              'badge-success': p.status === 'Available',
+              'badge-warning': p.status === 'On Hold',
+              'badge-danger': p.status === 'Sold' || p.status === 'Rented'
+            }">
+            {{ p.status || 'Available' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Property Details -->
+      <div class="property-card-body">
+        <div class="property-type-tag">{{ p.propertyType }}</div>
+        <h4 class="property-title" title="{{ p.propertyName }}">{{ p.propertyName }}</h4>
+        <div class="property-locality">
+          <span class="material-symbols-outlined icon-sm">pin_drop</span>
+          {{ p.location }}
+        </div>
+
+        <div class="property-spec-row">
+          <div class="spec-item">
+            <span class="material-symbols-outlined icon-sm">{{ p.bhkCount === 0 ? 'business' : 'bed' }}</span>
+            <span>{{ p.bhkCount === 0 ? 'Commercial' : (p.bhkCount || 1) + ' BHK' }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="material-symbols-outlined icon-sm">square_foot</span>
+            <span>{{ p.area }} Sq.Ft.</span>
+          </div>
+        </div>
+
+        <div class="property-owner-tag" *ngIf="userRole !== 'Buyer'">
+          <span class="material-symbols-outlined icon-sm">person</span>
+          <span>Owner: <strong>{{ getOwnerName(p.ownerId) }}</strong></span>
+        </div>
+
+        <!-- Amenities Preview -->
+        <div class="property-features-preview mt-2" *ngIf="p.keyFeatures">
+          <span *ngFor="let feature of p.keyFeatures.split(',')" class="feature-tag">
+            {{ feature.trim() }}
+          </span>
+        </div>
+
+        <!-- Description Snippet -->
+        <p class="property-desc-snippet mt-2" *ngIf="p.description">
+          {{ p.description }}
+        </p>
+      </div>
+
+      <!-- Card Footer Actions -->
+      <div class="property-card-footer mt-auto">
+        <div class="price-section">
+          <span class="price-title">VALUATION</span>
+          <h5 class="price-amount">₹{{ (p.price / 100000).toFixed(1) }} L</h5>
+        </div>
+        <div class="card-action-buttons">
+          <a *ngIf="p.videoUrl" [href]="p.videoUrl" target="_blank" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" title="Watch Walkthrough Video">
+            <span class="material-symbols-outlined">video_camera_back</span>
+          </a>
+          <ng-container *ngIf="userRole !== 'Buyer'; else buyerActions">
+            <button class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" (click)="editProperty(p)" title="Edit Listing">
+              <span class="material-symbols-outlined">edit</span>
+            </button>
+            <button class="pt-btn pt-btn-danger pt-btn-sm pt-btn-icon" (click)="deleteProperty(p.id)" title="Remove Listing">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </ng-container>
+          <ng-template #buyerActions>
+            <button class="pt-btn pt-btn-primary pt-btn-sm" (click)="openRequestVisitModal(p)" [disabled]="p.status !== 'Available'">
+              <span class="material-symbols-outlined icon-sm">calendar_today</span>
+              Request Visit
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabular Spreadsheet Directory Mode ── -->
+  <div class="pt-table-wrapper" *ngIf="viewMode === 'table' && properties.length > 0">
+    <div class="table-scroll-container">
+      <table class="pt-table">
+        <thead>
+          <tr>
+            <th class="ps-4">ID</th>
+            <th>Name &amp; Type</th>
+            <th>BHK Size</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Area</th>
+            <th>Status</th>
+            <th *ngIf="userRole !== 'Buyer'">Owner</th>
+            <th>Media</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of properties">
+            <td class="ps-4 text-muted fw-bold">PT-P{{ p.id }}</td>
+            <td>
+              <div>
+                <div class="fw-700 text-dark">{{ p.propertyName }}</div>
+                <div class="text-muted small d-flex align-items-center gap-1 mt-0.5" *ngIf="p.keyFeatures">
+                  <span class="material-symbols-outlined icon-sm text-primary">auto_awesome</span>
+                  {{ p.keyFeatures }}
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="pt-badge badge-neutral">{{ p.bhkCount === 0 ? 'Commercial' : (p.bhkCount || 1) + ' BHK' }}</span>
+            </td>
+            <td class="fw-600">{{ p.location }}</td>
+            <td>
+              <h5 class="fw-800 text-primary m-0">₹{{ (p.price / 100000).toFixed(1) }} L</h5>
+            </td>
+            <td>
+              <span class="pt-badge" [class.badge-success]="p.listingType === 'Sale'" [class.badge-accent]="p.listingType === 'Rent'">
+                {{ p.listingType || 'Sale' }}
+              </span>
+            </td>
+            <td class="text-dark fw-500">{{ p.area }} sqft</td>
+            <td>
+              <span class="pt-badge rounded-pill"
+                [ngClass]="{
+                  'badge-success': p.status === 'Available',
+                  'badge-warning': p.status === 'On Hold',
+                  'badge-danger': p.status === 'Sold' || p.status === 'Rented'
+                }">
+                {{ p.status || 'Available' }}
+              </span>
+            </td>
+            <td class="text-muted" *ngIf="userRole !== 'Buyer'">{{ getOwnerName(p.ownerId) }}</td>
+            <td>
+              <div class="actions-btn-group">
+                <a *ngIf="p.imageUrls" [href]="p.imageUrls" target="_blank" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" title="View Photos">
+                  <span class="material-symbols-outlined">image</span>
+                </a>
+                <a *ngIf="p.videoUrl" [href]="p.videoUrl" target="_blank" class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" title="View Video">
+                  <span class="material-symbols-outlined">videocam</span>
+                </a>
+              </div>
+            </td>
+            <td class="text-end pe-4">
+              <div class="actions-btn-group">
+                <ng-container *ngIf="userRole !== 'Buyer'; else buyerTableActions">
+                  <button class="pt-btn pt-btn-secondary pt-btn-sm pt-btn-icon" (click)="editProperty(p)" title="Edit">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="pt-btn pt-btn-danger pt-btn-sm pt-btn-icon" (click)="deleteProperty(p.id)" title="Remove">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </ng-container>
+                <ng-template #buyerTableActions>
+                  <button class="pt-btn pt-btn-primary pt-btn-sm" (click)="openRequestVisitModal(p)" [disabled]="p.status !== 'Available'">
+                    <span class="material-symbols-outlined icon-sm">calendar_today</span>
+                    Request Visit
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Add Owner Modal Dialog -->
+  <div *ngIf="showQuickAddOwner" class="pt-modal-overlay" (click)="showQuickAddOwner = false">
+    <div class="pt-modal-card pt-card page-enter" (click)="$event.stopPropagation()">
+      <div class="pt-modal-header bg-primary text-white">
+        <span class="section-title text-white">Add New Property Owner</span>
+        <button (click)="showQuickAddOwner = false" class="pt-btn pt-btn-ghost pt-btn-sm text-white" style="padding: 0; width: 32px; height: 32px;">
+          <span class="material-symbols-outlined text-white">close</span>
+        </button>
+      </div>
+      <div class="pt-card-body">
+        <form (submit)="quickAddOwner(); $event.preventDefault()">
+          <div class="form-group mb-3">
+            <label class="pt-field-label">Owner Name</label>
+            <input type="text" class="pt-input" placeholder="e.g. Ramesh Kumar" [(ngModel)]="quickOwner.name" name="ownerName" required>
+          </div>
+          <div class="form-group mb-3">
+            <label class="pt-field-label">Mobile Number</label>
+            <input type="text" class="pt-input" placeholder="e.g. 9876543210" [(ngModel)]="quickOwner.mobile" name="ownerMobile" required>
+          </div>
+          <div class="form-group mb-3">
+            <label class="pt-field-label">Email Address</label>
+            <input type="email" class="pt-input" placeholder="e.g. ramesh@gmail.com" [(ngModel)]="quickOwner.email" name="ownerEmail">
+          </div>
+          
+          <div class="form-actions mt-4 justify-content-end">
+            <button type="button" class="pt-btn pt-btn-secondary" (click)="showQuickAddOwner = false">
+              Cancel
+            </button>
+            <button type="submit" class="pt-btn pt-btn-primary">
+              <span class="material-symbols-outlined icon-sm">check_circle</span>
+              Add Owner
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Site Visit Modal Dialog -->
+  <div *ngIf="showRequestVisitModal" class="pt-modal-overlay" (click)="showRequestVisitModal = false">
+    <div class="pt-modal-card pt-card page-enter" (click)="$event.stopPropagation()">
+      <div class="pt-modal-header bg-primary text-white">
+        <span class="section-title text-white">Request Site Walkthrough</span>
+        <button (click)="showRequestVisitModal = false" class="pt-btn pt-btn-ghost pt-btn-sm text-white" style="padding: 0; width: 32px; height: 32px;">
+          <span class="material-symbols-outlined text-white">close</span>
+        </button>
+      </div>
+      <div class="pt-card-body">
+        <p class="text-muted small">Schedule a walkthrough session for <strong>{{ requestVisitProperty?.propertyName }}</strong> located at {{ requestVisitProperty?.location }}.</p>
+        
+        <form (submit)="submitRequestVisit(); $event.preventDefault()">
+          <div class="form-group mb-3">
+            <label class="pt-field-label">Preferred Date & Time</label>
+            <input type="datetime-local" class="pt-input" [(ngModel)]="requestVisitDate" name="visitDate" required>
+          </div>
+          <div class="form-group mb-3">
+            <label class="pt-field-label">Special Requests / Notes</label>
+            <textarea class="pt-input" rows="3" placeholder="e.g. Please coordinate parking access, prefer evening timing..." [(ngModel)]="requestVisitNotes" name="visitNotes"></textarea>
+          </div>
+          
+          <div class="form-actions mt-4 justify-content-end">
+            <button type="button" class="pt-btn pt-btn-secondary" (click)="showRequestVisitModal = false">
+              Cancel
+            </button>
+            <button type="submit" class="pt-btn pt-btn-primary">
+              <span class="material-symbols-outlined icon-sm">check_circle</span>
+              Submit Request
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

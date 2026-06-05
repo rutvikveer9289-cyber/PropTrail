@@ -1,0 +1,17 @@
+{
+  "/api": {
+    "target": "https://localhost:7214",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/notificationHub": {
+    "target": "https://localhost:7214",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
+
+
